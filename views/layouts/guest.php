@@ -125,7 +125,7 @@ if(Yii::$app->session->hasFlash('success') && is_string(Yii::$app->session->getF
 		All rights reserved.
 		</div>
 		<div class="d-none d-lg-block">
-			<b style="color: darkblue"><?= Yii::signature() ?></b>
+			<b style="color: darkblue"></b>
 		</div>
 	</section>
 </footer>

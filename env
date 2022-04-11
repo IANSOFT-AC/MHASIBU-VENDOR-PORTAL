@@ -1,0 +1,36 @@
+DB_SERVER = 'SSMSSHQDBSVR'
+DatabaseName = 'MHASIBU'
+DB_USER = MembersPortal
+DB_PASSWORD = "MembersPortal#LiveManenos2021"
+NavisionUsername = SaccoMembersPortal
+NavisionPassword = 'cu@Wine1986#*'
+
+server = 'ssmsshqappsvr.mhasibu.com'
+WebServicePort = '10047'
+ServerInstance = 'BC140'
+CompanyName= 'Mhasibu'
+DBCompanyName = 'Mhasibu$'
+
+ldPrefix = 'Mhasibu'
+adServer = '192.168.0.4'
+
+smtpserver = 'smtp.gmail.com'
+port = '587'
+emailusername = '' 
+emailpassword = ''
+emailencryption = ''
+
+UsingNTLM = 'No'
+ChildAccount = 'CHILD'
+GroupAccount = 'GROUP'
+IndividualAccount = 'IND'
+
+SMTP_HOST=''
+SMTP_USERNAME=''
+SMTP_PASSWORD=
+SMTP_PORT=587
+SMTP_ENCRYPTION=tls
+
+
+PRODUCT_VENDOR = 'IANSOFT TECHNOLOGIES LTD'
+
