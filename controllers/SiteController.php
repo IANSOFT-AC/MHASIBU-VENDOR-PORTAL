@@ -26,7 +26,7 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout', 'index', ],
+                'only' => ['logout', 'index',],
                 'rules' => [
                     [
                         'actions' => ['logout', 'index',],
@@ -44,8 +44,9 @@ class SiteController extends Controller
         ];
     }
 
-    public function beforeAction($action){
-        if(Yii::$app->user->isGuest){
+    public function beforeAction($action)
+    {
+        if (Yii::$app->user->isGuest) {
             $this->layout = 'guest';
         }
         if (!parent::beforeAction($action)) {
@@ -122,23 +123,23 @@ class SiteController extends Controller
     {
         $model = new RegisterForm();
 
-        if ($model->load(Yii::$app->request->post()) && $model->signup() ) {
+        if ($model->load(\Yii::$app->request->post()) && $model->signup()) {
             Yii::$app->session->setFlash('success', 'Thank you for registration. Please check your inbox for verification email.', true);
             return $this->goHome();
         }
-       
+
         return $this->render('signup', [
             'model' => $model,
         ]);
     }
 
-    public function actionSwitch($Id){
-        if(Yii::$app->session->has('SelectedCompany')){
+    public function actionSwitch($Id)
+    {
+        if (Yii::$app->session->has('SelectedCompany')) {
             Yii::$app->session->remove('SelectedCompany');
         }
         Yii::$app->session->set('SelectedCompany', $Id);
         return $this->redirect(['index',]);
-
     }
 
 
@@ -152,7 +153,7 @@ class SiteController extends Controller
         return $this->render('about');
     }
 
-    
+
     /**
      * Requests password reset.
      *
@@ -229,17 +230,16 @@ class SiteController extends Controller
                     'E_Mail' => Yii::$app->user->identity->email,
                 ];
                 $result = Yii::$app->navhelper->postData($service, $data);
-                if(is_object($result))
-                {
+                if (is_object($result)) {
                     $user = $model->registerVendorNo($result->No);
-                    if($user->VendorId) {
+                    if ($user->VendorId) {
                         Yii::$app->session->setFlash('success', 'Your email has been confirmed successfully!');
                         return $this->goHome();
-                    }else{
+                    } else {
                         Yii::$app->session->setFlash('error', $user);
                         return $this->goHome();
                     }
-                }else {
+                } else {
                     Yii::$app->session->setFlash('error', $result);
                     return $this->goHome();
                 }
@@ -276,5 +276,4 @@ class SiteController extends Controller
             'model' => $model
         ]);
     }
-
 }

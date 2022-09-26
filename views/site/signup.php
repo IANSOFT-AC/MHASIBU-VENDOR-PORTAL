@@ -5,8 +5,8 @@
 /* @var $model \frontend\models\SignupForm */
 
 use yii\helpers\Html;
-use yii\bootstrap\ActiveForm;
-use borales\extensions\phoneInput\PhoneInput;
+use yii\bootstrap4\ActiveForm;
+
 
 
 //$this->title = 'HRMIS - SignUp';
@@ -19,34 +19,35 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 
-            <?php $form = ActiveForm::begin(['id' => 'form-signup']); ?>
+    <?php $form = ActiveForm::begin(); ?>
 
-          
-               
-
-                 <?= $form->field($model, 'companyPhoneNo')->widget(PhoneInput::className(), [
-                                    'jsOptions' => [
-                                        'preferredCountries' => ['ke'],
-                                    ]]) ?>
+    <?= $form->errorSummary($model) ?>
 
 
-                <?= $form->field($model, 'email',[
-                    'inputTemplate' => '<div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-envelope"></i></span>{input}</div>'
-                ])->textInput(['placeholder' => 'Company E-mail Address'])->label(false) ?>
 
-                <?= $form->field($model, 'password',[
-                    'inputTemplate' => '<div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-lock"></i></span>{input}</div>'
-                ])->passwordInput(['placeholder' => 'Password'])->label(false) ?>
+    <?= $form->field($model, 'email', [
+        'inputTemplate' => '<div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-envelope"></i></span>{input}</div>'
+    ])->textInput(['placeholder' => 'Company E-mail Address', 'autocomplete' => 'off'])->label(false) ?>
 
-                <?= $form->field($model, 'confirmpassword',[
-                    'inputTemplate' => '<div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-lock"></i></span>{input}</div>'
-                ])->passwordInput(['placeholder' => 'Confirm your Password','required' => true])->label(false) ?>
+    <?= $form->field($model, 'companyPhoneNo', [
+        'inputTemplate' => '<div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-phone"></i></span>{input}</div>'
+    ])->textInput(['placeholder' => 'Company Phone Number', 'autocomplete' => 'off'])->label(false) ?>
 
-                <div class="form-group">
-                    <?= Html::submitButton('Signup', ['class' => 'btn btn-warning', 'name' => 'signup-button']) ?>
-                </div>
 
-            <?php ActiveForm::end(); ?>
+
+    <?= $form->field($model, 'password', [
+        'inputTemplate' => '<div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-lock"></i></span>{input}</div>'
+    ])->passwordInput(['placeholder' => 'Password', 'autocomplete' => 'off'])->label(false) ?>
+
+    <?= $form->field($model, 'confirmpassword', [
+        'inputTemplate' => '<div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-lock"></i></span>{input}</div>'
+    ])->passwordInput(['placeholder' => 'Confirm your Password'])->label(false) ?>
+
+    <div class="form-group">
+        <?= Html::submitButton('Signup', ['class' => 'btn btn-warning', 'name' => 'signup-button']) ?>
+    </div>
+
+    <?php ActiveForm::end(); ?>
 
 
 </div>

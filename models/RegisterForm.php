@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use yii\base\Model;
+
 class RegisterForm extends Model
 {
 
@@ -11,6 +12,8 @@ class RegisterForm extends Model
     public $password;
     public $confirmpassword;
     public $companyPhoneNo;
+    public $username;
+
 
     /**
      * {@inheritdoc}
@@ -32,7 +35,7 @@ class RegisterForm extends Model
 
             ['password', 'required'],
             ['password', 'string', 'min' => 6],
-            ['confirmpassword','compare','compareAttribute'=>'password','message'=>'Passwords do not match, try again'],
+            ['confirmpassword', 'compare', 'compareAttribute' => 'password', 'message' => 'Passwords do not match, try again'],
         ];
     }
 
@@ -41,6 +44,7 @@ class RegisterForm extends Model
         return [
             'companyPhoneNo' => 'Company Phone No',
             'email' => 'Company Email',
+            'username' => 'Username'
         ];
     }
 
@@ -54,15 +58,20 @@ class RegisterForm extends Model
         if (!$this->validate()) {
             return null;
         }
-        
+
         $user = new User();
+
         $user->email = $this->email;
         $user->companyPhoneNo = $this->companyPhoneNo;
         $user->setPassword($this->password);
         $user->generateAuthKey();
         $user->generateEmailVerificationToken();
-        return $user->save() && $this->sendEmail($user);
 
+
+
+
+
+        return $user->save() && $this->sendEmail($user);
     }
 
     /**
@@ -72,7 +81,7 @@ class RegisterForm extends Model
      */
     protected function sendEmail($user)
     {
-      
+
         return Yii::$app
             ->mailer
             ->compose(
@@ -89,5 +98,4 @@ class RegisterForm extends Model
     {
         return Yii::$app->getResponse()->redirect(Yii::$app->urlManager->createAbsoluteUrl(['site/login']));
     }
-   
 }
