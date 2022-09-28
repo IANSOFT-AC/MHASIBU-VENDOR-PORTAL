@@ -1,6 +1,7 @@
 <?php
 
 namespace app\models;
+
 use yii\base\InvalidArgumentException;
 use yii\base\Model;
 
@@ -46,7 +47,7 @@ class VerifyEmailForm extends Model
         $user = $this->_user;
 
 
-        if($HRUser){
+        if ($HRUser) {
             $user->status = User::STATUS_ACTIVE;
             return $user->save(false) ? $user : null;
         }
@@ -57,8 +58,6 @@ class VerifyEmailForm extends Model
 
     public function registerVendorNo($VendorId)
     {
-        $user = $this->_user;
-        $user->vendorNo = $VendorId;
-        return $user->save(false)? $user: $user->error[0];
+        return true;
     }
 }

@@ -1,8 +1,10 @@
 <?php
 
 namespace app\Library;
+
 use yii;
 use yii\base\Component;
+
 class Navision extends Component
 {
     public function init()
@@ -15,8 +17,8 @@ class Navision extends Component
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_HEADER, true);
         curl_setopt($ch, CURLOPT_NOBODY, true);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
-        curl_setopt($ch, CURLOPT_TIMEOUT,10);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
         $output = curl_exec($ch);
         $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
@@ -24,13 +26,13 @@ class Navision extends Component
         //echo function_exists('curl_version');
         //return($httpcode);
         curl_close($ch);
-        if(($httpcode == "200" ) || ( $httpcode == "302" )|| ( $httpcode == "401" )){
+        if (($httpcode == "200") || ($httpcode == "302") || ($httpcode == "401")) {
             return true;
-        }else{
+        } else {
             return $httpcode;
         }
     }
-    public function readEntries($credentials, $soapWsdl, $filter='')
+    public function readEntries($credentials, $soapWsdl, $filter = '')
     {
 
 
@@ -41,31 +43,68 @@ class Navision extends Component
         try {
             $result = $client->ReadMultiple(['filter' => $filter, 'setSize' => 1000]);
             return $result;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return $e->getMessage();
         }
     }
 
-     public function readEntry($credentials, $soapWsdl,$filter,$filterValue)
+    public function readEntry($credentials, $soapWsdl, $filter)
+    {
+        $client = $this->createClient($credentials, $soapWsdl);
+
+        if (!is_object($client)) {
+            return false;
+        }
+        // var_dump($client);exit;
+        try {
+            $result = $client->Read($filter);
+            return $result;
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function Auth($credentials, $soapWsdl, $filter, $filterValue)
+    {
+        $client = $this->createClient($credentials, $soapWsdl, 'Auth');
+
+        if (!is_object($client)) {
+            return false;
+        }
+        // var_dump($client);exit;
+        try {
+            $result = $client->Read([$filter => $filterValue]);
+            return $result;
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    // Get Record Id from Key
+
+    public function getRecordID($credentials, $soapWsdl, $Key)
     {
         $client = $this->createClient($credentials, $soapWsdl);
         try {
-            $result = $client->Read([$filter => $filterValue]);
+            $result = $client->GetRecIdFromKey(['Key' => $Key]);
             return $result;
         } catch (Exception $e) {
             return $e->getMessage();
         }
     }
 
-    public function readEntryToValidateLogin($credentials, $soapWsdl,$filter,$filterValue)
-    {
-        $client = $this->createClientForLoginVerification($credentials, $soapWsdl);
-        if($client === false){
-            return $client;
 
-        }
+    // ReaD By RecordId
+
+
+    public function readByRecID($credentials, $soapWsdl, $Key)
+    {
+
+        $RecordId = $this->getRecordID($credentials, $soapWsdl, $Key);
+
+        $client = $this->createClient($credentials, $soapWsdl);
         try {
-            $result = $client->Read([$filter => $filterValue]);
+            $result = $client->ReadByRecId(['recId' => $RecordId->GetRecIdFromKey_Result]);
             return $result;
         } catch (Exception $e) {
             return $e->getMessage();
@@ -74,18 +113,16 @@ class Navision extends Component
 
     public function addEntry($credentials, $soapWsdl, $Entry, $EntryID)
     {
-        /* print '<pre>';
-         print_r($Entry); exit;*/
         $client = $this->createClient($credentials, $soapWsdl);
+        // Yii::$app->recruitment->printrr($client);
         try {
             $result = $client->Create([$EntryID => $Entry]);
             return $result;
         } catch (\SoapFault $e) {
             return $e->getMessage();
         }
-
     }
-    public function importcasuals($credentials, $soapWsdl, $Entry="",$EntryID)
+    public function importcasuals($credentials, $soapWsdl, $Entry = "", $EntryID)
     {
         /*print '<pre>';
         print_r($Entry); exit;*/
@@ -99,7 +136,6 @@ class Navision extends Component
         } catch (\SoapFault $e) {
             return $e->getMessage();
         }
-
     }
     public function ApprovalRequest($credentials, $soapWsdl, $Entry)
     {
@@ -111,9 +147,9 @@ class Navision extends Component
         } catch (\SoapFault $e) {
             return $e->getMessage();
         }
-
     }
-    public function ApproveDocument($credentials, $soapWsdl, $Entry){//Approve any requests
+    public function ApproveDocument($credentials, $soapWsdl, $Entry)
+    { //Approve any requests
         $client = $this->createClient($credentials, $soapWsdl);
         try {
             $result = $client->ApproveEntry($Entry);
@@ -123,7 +159,8 @@ class Navision extends Component
         }
     }
 
-    public function RejectDocument($credentials, $soapWsdl, $Entry){//Reject any requests
+    public function RejectDocument($credentials, $soapWsdl, $Entry)
+    { //Reject any requests
         $client = $this->createClient($credentials, $soapWsdl);
         try {
             $result = $client->RejectEntry($Entry);
@@ -134,42 +171,46 @@ class Navision extends Component
     }
     /***Overtime send, cancel, approve, reject fxns***/
 
-    public function sendOtApproval($credentials,$soapWsdl,$Entry){//send Document for approval
-        $client = $this->createClient($credentials,$soapWsdl);
-        try{
+    public function sendOtApproval($credentials, $soapWsdl, $Entry)
+    { //send Document for approval
+        $client = $this->createClient($credentials, $soapWsdl);
+        try {
             $result = $client->SendOvertimeApproval($Entry);
             return $result;
-        }catch(\SoapFault $e){
+        } catch (\SoapFault $e) {
             return $e->getMessage();
         }
     }
 
-    public function cancelOtApproval($credentials,$soapWsdl,$Entry){// cancel approval for sent doc
-        $client = $this->createClient($credentials,$soapWsdl);
-        try{
+    public function cancelOtApproval($credentials, $soapWsdl, $Entry)
+    { // cancel approval for sent doc
+        $client = $this->createClient($credentials, $soapWsdl);
+        try {
             $result = $client->CancelOverime($Entry);
             return $result;
-        }catch(\SoapFault $e){
+        } catch (\SoapFault $e) {
             return $e->getMessage();
         }
     }
 
-    public function ApproveOt($credentials,$soapWsdl,$Entry){// Approve ot Document
-        $client = $this->createClient($credentials,$soapWsdl);
-        try{
+    public function ApproveOt($credentials, $soapWsdl, $Entry)
+    { // Approve ot Document
+        $client = $this->createClient($credentials, $soapWsdl);
+        try {
             $result = $client->ApproveOvertime($Entry);
             return $result;
-        }catch(\SoapFault $e){
+        } catch (\SoapFault $e) {
             return $e->getMessage();
         }
     }
 
-    public function RejectOt($credentials,$soapWsdl,$Entry){// Reject ot Document
-        $client = $this->createClient($credentials,$soapWsdl);
-        try{
+    public function RejectOt($credentials, $soapWsdl, $Entry)
+    { // Reject ot Document
+        $client = $this->createClient($credentials, $soapWsdl);
+        try {
             $result = $client->RejectOvertime($Entry);
             return $result;
-        }catch(\SoapFault $e){
+        } catch (\SoapFault $e) {
             return $e->getMessage();
         }
     }
@@ -188,7 +229,6 @@ class Navision extends Component
         } catch (\SoapFault $e) {
             return $e->getMessage();
         }
-
     }
     //Approve Request-->Test
     public function ApproveRequest($credentials, $soapWsdl, $Entry)
@@ -201,7 +241,6 @@ class Navision extends Component
         } catch (\SoapFault $e) {
             return $e->getMessage();
         }
-
     }
     //Approval for training
     public function ApprovalTraining($credentials, $soapWsdl, $Entry)
@@ -214,9 +253,8 @@ class Navision extends Component
         } catch (\SoapFault $e) {
             return $e->getMessage();
         }
-
     }
-//Approval for recruitment
+    //Approval for recruitment
 
     public function ApprovalRecruitment($credentials, $soapWsdl, $Entry)
     {
@@ -230,7 +268,7 @@ class Navision extends Component
         }
     }
 
-//Approval for store
+    //Approval for store
     public function approval($credentials, $soapWsdl, $Entry)
     {
         //$result =  $client->Create([$EntryID => $Entry]);
@@ -241,7 +279,6 @@ class Navision extends Component
         } catch (\SoapFault $e) {
             return $e->getMessage();
         }
-
     }
     //imprestSurrender
     public function approvalSurrender($credentials, $soapWsdl, $Entry)
@@ -254,107 +291,92 @@ class Navision extends Component
         } catch (\SoapFault $e) {
             return $e->getMessage();
         }
-
     }
-    public function leaveapproval($credentials, $soapWsdl, $Entry)//send leave for approval
+    public function leaveapproval($credentials, $soapWsdl, $Entry) //send leave for approval
     {
         //$result =  $client->Create([$EntryID => $Entry]);
         $client = $this->createClient($credentials, $soapWsdl);
-        try
-        {
+        try {
             $result = $client->SendLeaveApproval($Entry);
             return $result;
-        } catch (\SoapFault $e)
-        {
+        } catch (\SoapFault $e) {
             return $e->getMessage();
         }
-
     }
 
-    public function cancelleaveapprovalrequest($credentials, $soapWsdl, $Entry)//cancels a submitted leave request
+    public function cancelleaveapprovalrequest($credentials, $soapWsdl, $Entry) //cancels a submitted leave request
     {
         $client = $this->createClient($credentials, $soapWsdl);
-        try
-        {
+        try {
             $result = $client->CancelLeaveApproval($Entry);
             return $result;
-        } catch (\SoapFault $e)
-        {
+        } catch (\SoapFault $e) {
             return $e->getMessage();
         }
     }
 
 
-//recruitment  approval for any request
-    public function send_request_approval($credentials, $soapWsdl, $Entry)//send leave for approval
+    //recruitment  approval for any request
+    public function send_request_approval($credentials, $soapWsdl, $Entry) //send leave for approval
     {
         //$result =  $client->Create([$EntryID => $Entry]);
         $client = $this->createClient($credentials, $soapWsdl);
-        try
-        {
+        try {
             $result = $client->SendApprovalRequests($Entry);
             return $result;
-        } catch (\SoapFault $e)
-        {
+        } catch (\SoapFault $e) {
             return $e->getMessage();
         }
-
     }
 
     //Cancel approval for any request
-    public function cancel_request_approval($credentials, $soapWsdl, $Entry)//send leave for approval
+    public function cancel_request_approval($credentials, $soapWsdl, $Entry) //send leave for approval
     {
         //$result =  $client->Create([$EntryID => $Entry]);
         $client = $this->createClient($credentials, $soapWsdl);
-        try
-        {
+        try {
             $result = $client->CancelApprovalRequests($Entry);
             return $result;
-        } catch (\SoapFault $e)
-        {
+        } catch (\SoapFault $e) {
             return $e->getMessage();
         }
-
     }
-//Add casuals
-    public function insertcasual($credentials, $soapWsdl, $Entry){
+    //Add casuals
+    public function insertcasual($credentials, $soapWsdl, $Entry)
+    {
         $client = $this->createClient($credentials, $soapWsdl);
-        try
-        {
+        try {
             $result = $client->FnInsertCasualEmployees($Entry);
             ini_set('soap.wsdl_cache_ttl', 1);
             return $result;
-        } catch (\SoapFault $e)
-        {
+        } catch (\SoapFault $e) {
             return $e->getMessage();
         }
     }
 
-//Add Casuals transactions
-    public function insert_casuals_transaction($credentials, $soapWsdl, $Entry){
+    //Add Casuals transactions
+    public function insert_casuals_transaction($credentials, $soapWsdl, $Entry)
+    {
         $client = $this->createClient($credentials, $soapWsdl);
-        try
-        {
+        try {
             $result = $client->FnInsertCasualEmployeeDailyTrans($Entry);
             ini_set('soap.wsdl_cache_ttl', 1);
             return $result;
-        } catch (\SoapFault $e)
-        {
+        } catch (\SoapFault $e) {
             return $e->getMessage();
         }
     }
 
 
-//Get last casual entry
-    public function last_casual_entry($credentials, $soapWsdl, $Entry=""){
+    //Get last casual entry
+    public function last_casual_entry($credentials, $soapWsdl, $Entry = "")
+    {
         $client = $this->createClient($credentials, $soapWsdl);
-        try
-        {
+        try {
             $result = $client->FnGetTheLastEntryEmployees();
             ini_set('soap.wsdl_cache_ttl', 1);
             return $result;
-        } catch (\SoapFault $e)
-        {
+        } catch (\SoapFault $e) {
             return $e->getMessage();
         }
     }
@@ -362,81 +384,75 @@ class Navision extends Component
     //Get last casual daily entry
 
 
-    public function last_daily_entry($credentials, $soapWsdl, $Entry=""){
+    public function last_daily_entry($credentials, $soapWsdl, $Entry = "")
+    {
         $client = $this->createClient($credentials, $soapWsdl);
-        try
-        {
+        try {
             $result = $client->FnGetLastEntryEmployeeDaily();
             ini_set('soap.wsdl_cache_ttl', 1);
             return $result;
-        } catch (\SoapFault $e)
-        {
+        } catch (\SoapFault $e) {
             return $e->getMessage();
         }
     }
-//send recall notification
-    public function send_recall_note($credentials, $soapWsdl, $Entry){
+    //send recall notification
+    public function send_recall_note($credentials, $soapWsdl, $Entry)
+    {
         $client = $this->createClient($credentials, $soapWsdl);
-        try
-        {
+        try {
             $result = $client->FnSendRecallNotifications($Entry);
             ini_set('soap.wsdl_cache_ttl', 1);
             return $result;
-        } catch (\SoapFault $e)
-        {
+        } catch (\SoapFault $e) {
             return $e->getMessage();
         }
     }
-//validate recall days
-    public function validate_recall_days($credentials, $soapWsdl, $Entry){
+    //validate recall days
+    public function validate_recall_days($credentials, $soapWsdl, $Entry)
+    {
         $client = $this->createClient($credentials, $soapWsdl);
-        try
-        {
+        try {
             $result = $client->FnValidateRecallDays($Entry);
             ini_set('soap.wsdl_cache_ttl', 1);
             return $result;
-        } catch (\SoapFault $e)
-        {
+        } catch (\SoapFault $e) {
             return $e->getMessage();
         }
     }
 
-//Get leave balances
-    public function get_leave_balance($credentials, $soapWsdl, $Entry){
+    //Get leave balances
+    public function get_leave_balance($credentials, $soapWsdl, $Entry)
+    {
         $client = $this->createClient($credentials, $soapWsdl);
-        try
-        {
+        try {
             $result = $client->GetLeaveBalance($Entry);
             ini_set('soap.wsdl_cache_ttl', 1);
             return $result;
-        } catch (\SoapFault $e)
-        {
+        } catch (\SoapFault $e) {
             return $e->getMessage();
         }
     }
-//Get leaves for recall
-    public function get_recall_leaves($credentials, $soapWsdl, $Entry){
+    //Get leaves for recall
+    public function get_recall_leaves($credentials, $soapWsdl, $Entry)
+    {
         $client = $this->createClient($credentials, $soapWsdl);
-        try
-        {
+        try {
             $result = $client->FnGetLeavesToRecall($Entry);
             ini_set('soap.wsdl_cache_ttl', 1);
             return $result;
-        } catch (\SoapFault $e)
-        {
+        } catch (\SoapFault $e) {
             return $e->getMessage();
         }
     }
-//shortlist
-    public function shortlist($credentials, $soapWsdl, $Entry){
+    //shortlist
+    public function shortlist($credentials, $soapWsdl, $Entry)
+    {
         $client = $this->createClient($credentials, $soapWsdl);
-        try
-        {
+        try {
             $result = $client->ShortListApplicants($Entry);
             ini_set('soap.wsdl_cache_ttl', 1);
             return $result;
-        } catch (\SoapFault $e)
-        {
+        } catch (\SoapFault $e) {
             return $e->getMessage();
         }
     }
@@ -451,7 +467,6 @@ class Navision extends Component
         } catch (\SoapFault $e) {
             return $e->getMessage();
         }
-
     }
 
     //aprroval for purchase requisition
@@ -466,10 +481,9 @@ class Navision extends Component
         } catch (\SoapFault $e) {
             return $e->getMessage();
         }
-
     }
 
-//Aprroval for imprest
+    //Aprroval for imprest
     public function imprest($credentials, $soapWsdl, $Entry)
     {
         $client = $this->createClient($credentials, $soapWsdl);
@@ -480,7 +494,7 @@ class Navision extends Component
             return $e->getMessage();
         }
     }
-    
+
 
     public function updateEntry($credentials, $soapWsdl, $Entry, $EntryID)
     {
@@ -520,425 +534,10 @@ class Navision extends Component
     }
 
 
-    //RBSS Sale invoice code unit
-    public function GenerateInvoice($credentials, $soapWsdl, $Entry){//Approve any requests
-        $client = $this->createClient($credentials, $soapWsdl);
-        try {
-            $result = $client->CreateInvoice($Entry);
-            return $result;
-        } catch (\SoapFault $e) {
-            return $e->getMessage();
-        }
-    }
 
-//RBSS Create customer
+    // General Code Unit Invocation method
 
-    public function CreateCustomer($credentials, $soapWsdl, $Entry){//Approve any requests
-        $client = $this->createClient($credentials, $soapWsdl);
-        try {
-            $result = $client->CreateCustomer($Entry);
-            return $result;
-        } catch (\SoapFault $e) {
-            return $e->getMessage();
-        }
-    }
-
-
-
-    //IANSOFT LEAVE MGT
-
-    public function SendLeaveRequestApproval($credentials, $soapWsdl, $Entry)
-    {
-        //$result =  $client->Create([$EntryID => $Entry]);
-        $client = $this->createClient($credentials, $soapWsdl);
-        try {
-            $result = $client->IanSendLeaveApplicationForApproval($Entry);
-            return $result;
-        } catch (\SoapFault $e) {
-            return $e->getMessage();
-        }
-
-    }
-
-    public function CancelLeaveRequestApproval($credentials, $soapWsdl, $Entry)
-    {
-        //$result =  $client->Create([$EntryID => $Entry]);
-        $client = $this->createClient($credentials, $soapWsdl);
-        try {
-            $result = $client->IanCancelLeaveApplicationForApproval($Entry);
-            return $result;
-        } catch (\SoapFault $e) {
-            return $e->getMessage();
-        }
-
-    }
-
-    public function IanApproveLeaveApplication($credentials, $soapWsdl, $Entry)
-    {
-        //$result =  $client->Create([$EntryID => $Entry]);
-        $client = $this->createClient($credentials, $soapWsdl);
-        try {
-            $result = $client->IanApproveLeaveApplication($Entry);
-            return $result;
-        } catch (\SoapFault $e) {
-            return $e->getMessage();
-        }
-
-    }
-
-    public function IanRejectLeaveApplication($credentials, $soapWsdl, $Entry)
-    {
-        //$result =  $client->Create([$EntryID => $Entry]);
-        $client = $this->createClient($credentials, $soapWsdl);
-        try {
-            $result = $client->IanRejectLeaveApplication($Entry);
-            return $result;
-        } catch (\SoapFault $e) {
-            return $e->getMessage();
-        }
-
-    }
-
-    //Call Job Application CodeUnit
-
-    public function IanCreateJobApplication($credentials, $soapWsdl, $Entry)
-    {
-        $client = $this->createClient($credentials, $soapWsdl);
-        try {
-            $result = $client->IanCreateJobApplication($Entry);
-            return $result;
-        } catch (\SoapFault $e) {
-            return $e->getMessage();
-        }
-
-    }
-
-    //Payslip report
-
-    public function IanGeneratePayslip($credentials, $soapWsdl, $Entry)
-    {
-        $client = $this->createClient($credentials, $soapWsdl);
-        try {
-            $result = $client->IanGeneratePayslip($Entry);
-            return $result;
-        } catch (\SoapFault $e) {
-            return $e->getMessage();
-        }
-
-    }
-
-
-    //Generate P9 report
-
-    public function IanGenerateP9($credentials, $soapWsdl, $Entry)
-    {
-        $client = $this->createClient($credentials, $soapWsdl);
-        try {
-            $result = $client->IanGenerateP9($Entry);
-            return $result;
-        } catch (\SoapFault $e) {
-            return $e->getMessage();
-        }
-
-    }
-
-    // Generated medical Claims Report
-
-    public function IanGenerateMedicalStatementReport($credentials, $soapWsdl, $Entry)
-    {
-        $client = $this->createClient($credentials, $soapWsdl);
-        try {
-            $result = $client->IanGenerateMedicalStatementReport($Entry);
-            return $result;
-        } catch (\SoapFault $e) {
-            return $e->getMessage();
-        }
-
-    }
-
-
-    /** PERFOMANCE MANAGEMENT FUNCTIONS ON APPRAISAL WORKFLOW CODEUNIT */
-    //send Appraisal for approval
-
-    public function IanSendGoalSettingForApproval($credentials, $soapWsdl, $Entry)
-    {
-        $client = $this->createClient($credentials, $soapWsdl);
-        try {
-            $result = $client->IanSendGoalSettingForApproval($Entry);
-            return $result;
-        } catch (\SoapFault $e) {
-            return $e->getMessage();
-        }
-
-    }
-
-    //Approve set Goals
-
-    public function IanApproveGoalSetting($credentials, $soapWsdl, $Entry)
-    {
-        $client = $this->createClient($credentials, $soapWsdl);
-        try {
-            $result = $client->IanApproveGoalSetting($Entry);
-            return $result;
-        } catch (\SoapFault $e) {
-            return $e->getMessage();
-        }
-
-    }
-
-    //Reject Appraisal and send it back to appraisee
-
-
-    public function IanSendGoalSettingBackToAppraisee($credentials, $soapWsdl, $Entry)
-    {
-        $client = $this->createClient($credentials, $soapWsdl);
-        try {
-            $result = $client->IanSendGoalSettingBackToAppraisee($Entry);
-            return $result;
-        } catch (\SoapFault $e) {
-            return $e->getMessage();
-        }
-
-    }
-
-    //Send Mid Year Appraisal for Approval
-
-    public function IanSendMYAppraisalForApproval($credentials, $soapWsdl, $Entry)
-    {
-        $client = $this->createClient($credentials, $soapWsdl);
-        try {
-            $result = $client->IanSendMYAppraisalForApproval($Entry);
-            return $result;
-        } catch (\SoapFault $e) {
-            return $e->getMessage();
-        }
-
-    }
-
-    //Approve Mid Year Appraisal
-
-    public function IanApproveMYAppraisal($credentials, $soapWsdl, $Entry)
-    {
-        $client = $this->createClient($credentials, $soapWsdl);
-        try {
-            $result = $client->IanApproveMYAppraisal($Entry);
-            return $result;
-        } catch (\SoapFault $e) {
-            return $e->getMessage();
-        }
-
-    }
-
-    //Send Mid Year Appraisal back to Appraisee (A Rejection)
-
-    public function IanSendMYAppraisaBackToAppraisee($credentials, $soapWsdl, $Entry)
-    {
-        $client = $this->createClient($credentials, $soapWsdl);
-        try {
-            $result = $client->IanSendMYAppraisaBackToAppraisee($Entry);
-            return $result;
-        } catch (\SoapFault $e) {
-            return $e->getMessage();
-        }
-
-    }
-
-    //Send End Year Appraisal for Approval
-
-    public function IanSendEYAppraisalForApproval($credentials, $soapWsdl, $Entry)
-    {
-        $client = $this->createClient($credentials, $soapWsdl);
-        try {
-            $result = $client->IanSendEYAppraisalForApproval($Entry);
-            return $result;
-        } catch (\SoapFault $e) {
-            return $e->getMessage();
-        }
-
-    }
-
-
-    //Approve End Year Appraisal
-
-    public function IanApproveEYAppraisal($credentials, $soapWsdl, $Entry)
-    {
-        $client = $this->createClient($credentials, $soapWsdl);
-        try {
-            $result = $client->IanApproveEYAppraisal($Entry);
-            return $result;
-        } catch (\SoapFault $e) {
-            return $e->getMessage();
-        }
-
-    }
-
-    //Send End Year Appraisal back to Appraisee (Rejection)
-
-    public function IanSendEYAppraisaBackToAppraisee($credentials, $soapWsdl, $Entry)
-    {
-        $client = $this->createClient($credentials, $soapWsdl);
-        try {
-            $result = $client->IanSendEYAppraisaBackToAppraisee($Entry);
-            return $result;
-        } catch (\SoapFault $e) {
-            return $e->getMessage();
-        }
-
-    }
-
-    //send End Year Appraisal to Peer1
-
-    public function IanSendEYAppraisalToPeer1($credentials, $soapWsdl, $Entry)
-    {
-        $client = $this->createClient($credentials, $soapWsdl);
-        try {
-            $result = $client->IanSendEYAppraisalToPeer1($Entry);
-            return $result;
-        } catch (\SoapFault $e) {
-            return $e->getMessage();
-        }
-
-    }
-
-    //send End Year Appraisal to Peer2
-
-    public function IanSendEYAppraisalToPeer2($credentials, $soapWsdl, $Entry)
-    {
-        $client = $this->createClient($credentials, $soapWsdl);
-        try {
-            $result = $client->IanSendEYAppraisalToPeer2($Entry);
-            return $result;
-        } catch (\SoapFault $e) {
-            return $e->getMessage();
-        }
-
-    }
-
-    //send appraisal to supervisor from peers
-
-    public function IanSendEYAppraisaBackToSupervisorFromPeer($credentials, $soapWsdl, $Entry)
-    {
-        $client = $this->createClient($credentials, $soapWsdl);
-        try {
-            $result = $client->IanSendEYAppraisaBackToSupervisorFromPeer($Entry);
-            return $result;
-        } catch (\SoapFault $e) {
-            return $e->getMessage();
-        }
-
-    }
-
-    //Send Appraisal to Agreement Level
-
-    public function IanSendEYAppraisalToAgreementLevel($credentials, $soapWsdl, $Entry)
-    {
-        $client = $this->createClient($credentials, $soapWsdl);
-        try {
-            $result = $client->IanSendEYAppraisalToAgreementLevel($Entry);
-            return $result;
-        } catch (\SoapFault $e) {
-            return $e->getMessage();
-        }
-
-    }
-
-    //Generate Appraisal Report
-
-    public function IanGenerateAppraisalReport($credentials, $soapWsdl, $Entry)
-    {
-        $client = $this->createClient($credentials, $soapWsdl);
-        try {
-            $result = $client->IanGenerateAppraisalReport($Entry);
-            return $result;
-        } catch (\SoapFault $e) {
-            return $e->getMessage();
-        }
-
-    }
-
-
-    /*Contract renewal workflow functions*/
-
-    public function IanSendNewEmployeeForApproval($credentials, $soapWsdl, $Entry)
-    {
-        $client = $this->createClient($credentials, $soapWsdl);
-        try {
-            $result = $client->IanSendNewEmployeeForApproval($Entry);
-            return $result;
-        } catch (\SoapFault $e) {
-            return $e->getMessage();
-        }
-
-    }
-
-
-    public function IanSendNewEmployeeAppraisalBackToAppraisee($credentials, $soapWsdl, $Entry)
-    {
-        $client = $this->createClient($credentials, $soapWsdl);
-        try {
-            $result = $client->IanSendNewEmployeeAppraisalBackToAppraisee($Entry);
-            return $result;
-        } catch (\SoapFault $e) {
-            return $e->getMessage();
-        }
-
-    }
-
-
-    public function IanSendEmployeeAppraisalToHr($credentials, $soapWsdl, $Entry)
-    {
-        $client = $this->createClient($credentials, $soapWsdl);
-        try {
-            $result = $client->IanSendEmployeeAppraisalToHr($Entry);
-            return $result;
-        } catch (\SoapFault $e) {
-            return $e->getMessage();
-        }
-
-    }
-
-
-    public function IanSendNewEmployeeAppraisalBackToSupervisor($credentials, $soapWsdl, $Entry)
-    {
-        $client = $this->createClient($credentials, $soapWsdl);
-        try {
-            $result = $client->IanSendNewEmployeeAppraisalBackToSupervisor($Entry);
-            return $result;
-        } catch (\SoapFault $e) {
-            return $e->getMessage();
-        }
-
-    }
-
-    public function IanApproveNewEmployeeAppraisal($credentials, $soapWsdl, $Entry)
-    {
-        $client = $this->createClient($credentials, $soapWsdl);
-        try {
-            $result = $client->IanApproveNewEmployeeAppraisal($Entry);
-            return $result;
-        } catch (\SoapFault $e) {
-            return $e->getMessage();
-        }
-
-    }
-
-
-    public function IanRejectNewEmployeeAppraisal($credentials, $soapWsdl, $Entry)
-    {
-        $client = $this->createClient($credentials, $soapWsdl);
-        try {
-            $result = $client->IanRejectNewEmployeeAppraisal($Entry);
-            return $result;
-        } catch (\SoapFault $e) {
-            return $e->getMessage();
-        }
-
-    }
-
-    /*COCRI*/
-
-
-    public function CongriApprovalWorkFlow($credentials, $soapWsdl, $Entry,$method)
+    public function Codeunit($credentials, $soapWsdl, $Entry, $method)
     {
         $client = $this->createClient($credentials, $soapWsdl);
         try {
@@ -947,88 +546,13 @@ class Navision extends Component
         } catch (\SoapFault $e) {
             return $e->getMessage();
         }
-
-    }
-
-
-    /*Imprest*/
-
-    public function CongriImprest($credentials, $soapWsdl, $Entry,$method)
-    {
-        $client = $this->createClient($credentials, $soapWsdl);
-        try {
-            $result = $client->$method($Entry);
-            return $result;
-        } catch (\SoapFault $e) {
-            return $e->getMessage();
-        }
-
-    }
-
-    /*Portal Reports*/
-
-    public function PortalReports($credentials, $soapWsdl, $Entry,$method)
-    {
-        $client = $this->createClient($credentials, $soapWsdl);
-        try {
-            $result = $client->$method($Entry);
-            return $result;
-        } catch (\SoapFault $e) {
-            return $e->getMessage();
-        }
-
-    }
-
-    //Get Job Requirement Entries
-
-    public function Jobs($credentials, $soapWsdl, $Entry,$method)
-    {
-        $client = $this->createClient($credentials, $soapWsdl);
-        try {
-            $result = $client->$method($Entry);
-            return $result;
-        } catch (\SoapFault $e) {
-            return $e->getMessage();
-        }
-
-    }
-
-
-    // Employee Exit
-
-    public function EmployeeExit($credentials, $soapWsdl, $Entry,$method)
-    {
-        $client = $this->createClient($credentials, $soapWsdl);
-        try {
-            $result = $client->$method($Entry);
-            return $result;
-        } catch (\SoapFault $e) {
-            return $e->getMessage();
-        }
-
-    }
-
-
-
-     // General Code Unit Invocation method
-
-     public function Codeunit($credentials, $soapWsdl, $Entry,$method)
-    {
-        $client = $this->createClient($credentials, $soapWsdl);
-        try {
-            $result = $client->$method($Entry);
-            return $result;
-        } catch (\SoapFault $e) {
-            return $e->getMessage();
-        }
-
     }
 
 
 
     //Navision Critical Functions
 
-    private function createClient($credentials, $soapWsdl)
+    private function createClient($credentials, $soapWsdl, $context = null)
     {
 
 
@@ -1062,102 +586,33 @@ class Navision extends Component
                 ]
             ]);
 
-            $options = array("login" => $credentials->UserName,
-            "password" => $credentials->PassWord,
-            "features" => SOAP_SINGLE_ELEMENT_ARRAYS,
-            "stream_context" => $context);
-            if(Yii::$app->params['SystemConfigs']['UsingNTLM'] == 'Yes'){      
+            $options = array(
+                "login" => $credentials->UserName,
+                "password" => $credentials->PassWord,
+                "features" => SOAP_SINGLE_ELEMENT_ARRAYS,
+                "stream_context" => $context
+            );
+
+            /*
+
+            USIE THIS FOR NAV PWD AUTH / BASIC AUTH */
+            //$client = new \SoapClient($soapWsdl, $options);
+
+            //USE BELOW CLIENT GENERATION METHOD FOR NTLM / AD AUTH
             stream_wrapper_unregister('http');
             // we register the new HTTP wrapper //'\\common\\components\\NTLMStream'
-            stream_wrapper_register('http', '\\app\\library\\NTLMStream') or die("Failed to register protocol");
+            stream_wrapper_register('http', '\\app\\Library\\NTLMStream') or die("Failed to register protocol");
+
+
             $client = new NTLMSoapClient($soapWsdl, $options);
-            }else{
-                $client = new \SoapClient($soapWsdl, $options);
-            }
 
             return $client;
         } catch (\Exception $e) {
-            throw new yii\web\HttpException('503', 'Service Error '.$e->getMessage());
+            // throw new yii\web\HttpException('503', 'Service Error '.$e->getMessage());
+            return false;
         }
         return false;
     }
-
-    
-    public function getRecordID($credentials, $soapWsdl,$Key)
-    {
-        $client = $this->createClient($credentials, $soapWsdl);
-        try {
-            $result = $client->GetRecIdFromKey(['Key' => $Key]);
-            return $result;
-        } catch (Exception $e) {
-            return $e->getMessage();
-        }
-    }
-
-    public function readByRecID($credentials, $soapWsdl,$Key)
-    {
-
-        $RecordId = $this->getRecordID($credentials, $soapWsdl, $Key);
-
-        //Yii::$app->recruitment->printrr($RecordId);
-
-        $client = $this->createClient($credentials, $soapWsdl);
-        try {
-            $result = $client->ReadByRecId(['recId' => $RecordId->GetRecIdFromKey_Result]);
-            return $result;
-        } catch (Exception $e) {
-            return $e->getMessage();
-        }
-    }
-    
-    private function createClientForLoginVerification($credentials, $soapWsdl)
-    {
-
-
-
-        if (!defined('USERPWD'))
-            define('USERPWD', "$credentials->UserName:$credentials->PassWord");
-        try {
-            $opts = array(
-                'ssl' => array(
-                    'verify_peer' => false,
-                    'verify_peer_name' => false,
-                    'allow_self_signed' => true,
-                )
-            );
-            $oPtions = [
-                'soap_version' => SOAP_1_2,
-                'connection_timeout' => 180,
-                'login' => $credentials->UserName,
-                'password' => $credentials->PassWord,
-
-                'trace' => 1,
-                'stream_context' => stream_context_create($opts)
-            ];
-
-            $context = stream_context_create([
-                'ssl' => [
-                    // set some SSL/TLS specific options
-                    'verify_peer' => false,
-                    'verify_peer_name' => false,
-                    'allow_self_signed' => true
-                ]
-            ]);
-
-            $options = array("login" => $credentials->UserName,
-                "password" => $credentials->PassWord,
-                "features" => SOAP_SINGLE_ELEMENT_ARRAYS,
-                "stream_context" => $context);
-
-           $client = new \SoapClient($soapWsdl, $options);
-
-        } catch (\Exception $e) {
-            return false;
-        }
-        
-        return $client;
-    }
-
 }
 
 /**va
@@ -1189,7 +644,6 @@ class NTLMSoapClient extends \SoapClient
         $response = @curl_exec($ch);
 
         return $response;
-
     }
 
     function __getLastRequestHeaders()

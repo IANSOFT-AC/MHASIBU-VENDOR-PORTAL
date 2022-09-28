@@ -10,6 +10,8 @@ use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\RegisterForm;
 use app\models\ResetPasswordForm;
+use app\models\Supplier;
+use app\models\User;
 use yii\base\InvalidArgumentException;
 use yii\web\BadRequestHttpException;
 use app\models\VerifyEmailForm;
@@ -29,6 +31,11 @@ class CompanyProfileController extends Controller
                 'only' => ['logout', 'index',],
                 'rules' => [
                     [
+                        'actions' => ['signup', 'setfield'],
+                        'allow' => true,
+                        'roles' => ['?'],
+                    ],
+                    [
                         'actions' => ['logout', 'index',],
                         'allow' => true,
                         'roles' => ['@'],
@@ -44,17 +51,7 @@ class CompanyProfileController extends Controller
         ];
     }
 
-    public function beforeAction($action)
-    {
-        if (Yii::$app->user->isGuest) {
-            $this->layout = 'guest';
-            $this->goHome();
-        }
-        if (!parent::beforeAction($action)) {
-            return false;
-        }
-        return true; // or false to not run the action
-    }
+
 
 
     public function actionIndex()
@@ -82,22 +79,51 @@ class CompanyProfileController extends Controller
 
         $model = new VendorCard();
         $model->PortalId = Yii::$app->user->identity->id;
-        $model->No = Yii::$app->user->identity->vendorNo;
+        $model->No = Yii::$app->user->identity->VendorNo;
 
 
         $service = Yii::$app->params['ServiceName']['VendorCard'];
 
-        return $this->render('create', [
-            'model' => $model,
-            'towns' => Yii::$app->navhelper->dropdown('PostalCodes', 'Code', 'City'),
-            'countries' => Yii::$app->navhelper->dropdown('Countries', 'Code', 'Name'),
-            'scategories' => Yii::$app->navhelper->dropdown('SupplierCategory', 'Category_Code', 'Description'),
-            'locations' =>  [],
-            'ShipmentMethods' => [],
-            'paymentTerms' => Yii::$app->navhelper->dropdown('PaymentTerms', 'Code', 'Description'),
-            'paymentMethods' => Yii::$app->navhelper->dropdown('PaymentMethods', 'Code', 'Description')
+        // Make initial request
+        $request = Yii::$app->navhelper->postData($service, $model);
 
-        ]);
+
+        if (is_object($request) && property_exists($request, 'Key')) {
+
+            // Update UserTable with SUpplier No
+
+            $user = Supplier::findOne(['id' => Yii::$app->user->identity->id]);
+            if ($user) {
+                $user->VendorId = $request->No;
+                if ($user->save()) {
+                    return $this->redirect(['update']);
+                }
+            }
+
+            if (Yii::$app->user->identity->VendorId) {
+                return $this->redirect(['update']);
+            }
+
+
+
+
+
+            Yii::$app->navhelper->loadmodel($request, $model);
+
+            return $this->render('create', [
+                'model' => $model,
+                'towns' => Yii::$app->navhelper->dropdown('PostalCodes', 'Code', 'City'),
+                'countries' => Yii::$app->navhelper->dropdown('Countries', 'Code', 'Name'),
+                'scategories' => Yii::$app->navhelper->dropdown('SupplierCategory', 'Category_Code', 'Description'),
+                'locations' =>  [],
+                'ShipmentMethods' => [],
+                'paymentTerms' => Yii::$app->navhelper->dropdown('PaymentTerms', 'Code', 'Description'),
+                'paymentMethods' => Yii::$app->navhelper->dropdown('PaymentMethods', 'Code', 'Description')
+
+            ]);
+        }
+
+        Yii::$app->recruitment->printrr($request);
     }
 
     public function actionUpdate()
@@ -106,13 +132,8 @@ class CompanyProfileController extends Controller
         $service = Yii::$app->params['ServiceName']['VendorCard'];
 
         // Check for vendorId as well as account verification hook validation
-
-        if (!Yii::$app->user->identity->vendorId) {
-            Yii::$app->session->setFlash('error', 'Kindly Check your email to validate your account in order to proceed, thank you.');
-            return $this->redirect(['site/index']);
-        }
-
-        $data = Yii::$app->navhelper->findOne($service, '', 'No', Yii::$app->user->identity->vendorNo);
+        //Yii::$app->recruitment->printrr(Yii::$app->user->identity->VendorId);
+        $data = Yii::$app->navhelper->findOne($service, '', ['No' =>  Yii::$app->user->identity->VendorId]);
         Yii::$app->navhelper->loadmodel($data, $model);
         return $this->render('update', [
             'model' => $model,
@@ -173,13 +194,14 @@ class CompanyProfileController extends Controller
     }
 
 
-    /** Updates a single field */
     public function actionSetfield($field)
     {
-        $service = 'VendorCard';
+
+        $service = Yii::$app->request->post('service') !== 'VendorCard'  ? Yii::$app->request->post('service') : 'VendorCard';
         $value = Yii::$app->request->post('fieldValue');
 
         $result = Yii::$app->navhelper->Commit($service, [$field => $value], Yii::$app->request->post('Key'));
+        //Yii::$app->recruitment->printrr($result);
         Yii::$app->response->format = \yii\web\response::FORMAT_JSON;
         return $result;
     }

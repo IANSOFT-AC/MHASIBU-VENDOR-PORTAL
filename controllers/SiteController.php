@@ -221,9 +221,7 @@ class SiteController extends Controller
         }
         if ($user = $model->verifyEmail()) {
             if (Yii::$app->user->login($user)) {
-
                 // Save the user vendor table to ensure you have a vendor No
-
                 $service = Yii::$app->params['ServiceName']['VendorCard'];
                 $data = [
                     'Phone_No' => Yii::$app->user->identity->companyPhoneNo,
