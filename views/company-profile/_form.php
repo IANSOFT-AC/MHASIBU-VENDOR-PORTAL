@@ -211,9 +211,6 @@ if (Yii::$app->session->hasFlash('success')) {
                     <div class=" row col-md-12">
                         <div class="col-md-6">
                             <?= $form->field($model, 'Payment_Terms_Code')->dropDownList($paymentTerms, ['prompt' => 'Select ...']) ?>
-
-
-
                         </div>
                         <div class="col-md-6">
                             <?= $form->field($model, 'Payment_Method_Code')->dropDownList($paymentMethods, ['prompt' => 'select ...']) ?>

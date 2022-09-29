@@ -40,12 +40,15 @@ return [
         'Countries' => 'Countries', //10
         'SupplierBankAccounts' => 'SupplierBankAccounts',  //66058
         'KenyaBanks' => 'KenyaBanks', // 66067
+        'BankBranches' => 'BankBranches', //66068
         'SupplierAdditionalAddress' => 'SupplierAdditionalAddress', // 66059
         'PostalCodes' => 'PostalCodes', //367
         'PaymentTerms' => 'PaymentTerms', //4
         'PaymentMethods' => 'PaymentMethods', // 427
         'PortalFactory' => 'PortalFactory', // 50062
         'Countries' => 'Countries', //10
+        'SupplierAttachments' => 'SupplierAttachments', //66063
+        'SupplierAttachmentTypes' => 'SupplierAttachmentTypes', //66062
     ],
 
 ];

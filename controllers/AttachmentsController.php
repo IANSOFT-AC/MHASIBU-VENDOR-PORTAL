@@ -2,22 +2,22 @@
 
 namespace app\controllers;
 
-use app\models\BankAccount;
-use app\models\SupplierPartnerDetails;
+use app\models\Addresses;
+use app\models\Attachment;
 use app\models\VendorCard;
 use Yii;
 use yii\filters\AccessControl;
 use yii\filters\ContentNegotiator;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
+use yii\helpers\FileHelper;
 use yii\helpers\Html;
 use yii\web\Controller;
-use frontend\models\Leave;
 use yii\web\Response;
-use app\models\MemberApplicationCard;
 
 
-class BankAccountController extends Controller
+
+class AttachmentsController extends Controller
 {
     public function behaviors()
     {
@@ -34,10 +34,10 @@ class BankAccountController extends Controller
                     [
                         'actions' => ['logout', 'index'],
                         'allow' => true,
-                        //'roles' => ['@'],
-                        'matchCallback' => function ($rule, $action) {
-                            return (Yii::$app->session->has('HRUSER') || !Yii::$app->user->isGuest);
-                        },
+                        'roles' => ['@'],
+                        // 'matchCallback' => function ($rule, $action) {
+                        //     return (Yii::$app->session->has('HRUSER') || !Yii::$app->user->isGuest);
+                        // },
                     ],
                 ],
             ],
@@ -49,7 +49,7 @@ class BankAccountController extends Controller
             ],
             'contentNegotiator' => [
                 'class' => ContentNegotiator::class,
-                'only' => ['list'],
+                'only' => ['list', 'upload'],
                 'formatParam' => '_format',
                 'formats' => [
                     'application/json' => Response::FORMAT_JSON,
@@ -63,7 +63,7 @@ class BankAccountController extends Controller
     {
 
         $ExceptedActions = [
-            'add-line', 'banks', 'bank-branch'
+            'add-line', 'countries', 'postalcodes', 'upload'
         ];
 
         if (in_array($action->id, $ExceptedActions)) {
@@ -76,34 +76,22 @@ class BankAccountController extends Controller
 
     public function actionIndex()
     {
-        $service = Yii::$app->params['ServiceName']['SupplierBankAccounts'];
-        $filter = [
-            'Supplier_No' => Yii::$app->user->identity->VendorId,
-        ];
-        $data = Yii::$app->navhelper->getData($service, $filter);
+        $service = Yii::$app->params['ServiceName']['SupplierAttachments'];
+        $filter = [];
+        $results = Yii::$app->navhelper->getData($service, $filter);
+
+        $service = Yii::$app->params['ServiceName']['SupplierAttachmentTypes'];
+        $filter = [];
+        $types = Yii::$app->navhelper->getData($service, $filter);
+
+        $model = new Attachment();
 
         return $this->render('index', [
-            'data' => $data,
+            'data' => $results,
+            'types' => $types,
+            'model' => $model
         ]);
     }
-
-    public function getCountries()
-    {
-        $service = Yii::$app->params['ServiceName']['Countries'];
-        $res = [];
-        $Countries = \Yii::$app->navhelper->getData($service);
-        foreach ($Countries as $Country) {
-            if (!empty($Country->Code))
-                $res[] = [
-                    'Code' => $Country->Code,
-                    'Name' => $Country->Name
-                ];
-        }
-
-        return $res;
-    }
-
-
 
     public function ApplicantDetails($key)
     {
@@ -130,10 +118,10 @@ class BankAccountController extends Controller
     public function actionCreate()
     {
 
-        $model = new BankAccount();
-        $service = Yii::$app->params['ServiceName']['SupplierBankAccounts'];
+        $model = new Addresses();
+        $service = Yii::$app->params['ServiceName']['SupplierAdditionalAddress'];
         $model->Supplier_No = Yii::$app->user->identity->vendorNo;
-        $model->Code = $this->getRandomCode();
+        $model->Post_Code = $this->getRandomPostalCode();
 
         // Make Initial Request
         $result = Yii::$app->navhelper->postData($service, $model);
@@ -148,14 +136,14 @@ class BankAccountController extends Controller
         if (Yii::$app->request->isAjax) {
             return $this->renderAjax('create', [
                 'model' => $model,
-                'banks' => Yii::$app->navhelper->dropdown('KenyaBanks', 'Bank_Code', 'Bank_Name'),
+                'postalCodes' => Yii::$app->navhelper->dropdown('PostalCodes', 'Code', 'City'),
             ]);
         }
     }
 
-    public function getRandomCode()
+    public function getRandomPostalCode()
     {
-        $codes = Yii::$app->navhelper->dropdown('KenyaBanks', 'Bank_Code', 'Bank_Name');
+        $codes = Yii::$app->navhelper->dropdown('PostalCodes', 'Code', 'City');
         $keys = array_keys($codes);
         shuffle($keys);
         return $keys[0];
@@ -163,8 +151,8 @@ class BankAccountController extends Controller
 
     public function actionUpdate()
     {
-        $service = Yii::$app->params['ServiceName']['SupplierBankAccounts'];
-        $model = new BankAccount();
+        $service = Yii::$app->params['ServiceName']['SupplierAdditionalAddress'];
+        $model = new Addresses();
 
         $result = Yii::$app->navhelper->readByKey($service, urldecode(Yii::$app->request->get('Key')));
 
@@ -179,56 +167,31 @@ class BankAccountController extends Controller
         if (Yii::$app->request->isAjax) {
             return $this->renderAjax('update', [
                 'model' => $model,
-                'banks' => Yii::$app->navhelper->dropdown('KenyaBanks', 'Bank_Code', 'Bank_Name')
+                'postalCodes' => Yii::$app->navhelper->dropdown('PostalCodes', 'Code', 'City'),
             ]);
         }
     }
 
     public function actionDelete()
     {
-        $service = Yii::$app->params['ServiceName']['SupplierBankAccounts'];
-        $result = Yii::$app->navhelper->deleteData($service, Yii::$app->request->get('Key'));
+        $service = Yii::$app->params['ServiceName']['SupplierAdditionalAddress'];
+        $result = Yii::$app->navhelper->deleteData($service, urldecode(Yii::$app->request->get('Key')));
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         if (!is_string($result)) {
-
-            return Yii::$app->session->setFlash("success", 'Record Purged Successfully', true);
+            return ['note' => '<div class="alert alert-success">Record Purged Successfully</div>'];
         } else {
-            return Yii::$app->session->setFlash("success", 'Record Purged Successfully', true);
+            return ['note' => '<div class="alert alert-danger">Error Purging Record: ' . $result . '</div>'];
         }
     }
 
-
-    public function actionView($ApplicationNo)
-    {
-        $service = Yii::$app->params['ServiceName']['leaveApplicationCard'];
-        $leaveTypes = $this->getLeaveTypes();
-        $employees = $this->getEmployees();
-
-        $filter = [
-            'Application_No' => $ApplicationNo
-        ];
-
-        $leave = Yii::$app->navhelper->getData($service, $filter);
-
-        //load nav result to model
-        $leaveModel = new AccountSignatoriesList();
-        $model = $this->loadtomodel($leave[0], $leaveModel);
-
-
-        return $this->render('view', [
-            'model' => $model,
-            'leaveTypes' => ArrayHelper::map($leaveTypes, 'Code', 'Description'),
-            'relievers' => ArrayHelper::map($employees, 'No', 'Full_Name'),
-        ]);
-    }
 
 
 
     public function actionList()
     {
-        $service = Yii::$app->params['ServiceName']['SupplierBankAccounts'];
+        $service = Yii::$app->params['ServiceName']['SupplierAdditionalAddress'];
         $filter = [
-            'Supplier_No' => Yii::$app->user->identity->VendorId,
+            'Supplier_No' => Yii::$app->user->identity->vendorNo,
         ];
         $results = Yii::$app->navhelper->getData($service, $filter);
 
@@ -238,7 +201,7 @@ class BankAccountController extends Controller
         if (is_array($results)) {
             foreach ($results as $kin) {
 
-                if (empty($kin->Name) && empty($kin->Bank_Account_No)) {
+                if (empty($kin->Address) && empty($kin->Post_Code)) {
                     continue;
                 }
                 ++$count;
@@ -251,10 +214,12 @@ class BankAccountController extends Controller
 
                 $result['data'][] = [
                     'index' => $count,
-                    'Code' => !empty($kin->Code) ? $kin->Code : '',
-                    'Name' => !empty($kin->Name) ? $kin->Name : '',
-                    'Bank_Account_No' => !empty($kin->Bank_Account_No) ? $kin->Bank_Account_No : '',
-                    'SWIFT_Code' => !empty($kin->SWIFT_Code) ? $kin->SWIFT_Code : '',
+                    'Address' => !empty($kin->Address) ? $kin->Address : '',
+                    'Post_Code' => !empty($kin->Post_Code) ? $kin->Post_Code : '',
+                    'City' => !empty($kin->City) ? $kin->City : '',
+                    'Country_Code' => !empty($kin->Country_Code) ? $kin->Country_Code : '',
+                    'Telephone_No' => !empty($kin->Telephone_No) ? $kin->Telephone_No : '',
+                    'E_mail' => !empty($kin->E_mail) ? $kin->E_mail : '',
                     'action' => $updateLink . $deletelink
                 ];
             }
@@ -265,24 +230,19 @@ class BankAccountController extends Controller
         return $result;
     }
 
-    public function actionBanks()
+    public function actionCountries()
     {
-        $data = Yii::$app->navhelper->dropdown('KenyaBanks', 'Bank_Code', 'Bank_Name');
+        $data = Yii::$app->navhelper->dropdown('Countries', 'Code', 'Name');
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         return $data;
     }
 
-    public function actionBankBranch()
+    public function actionPostalcodes()
     {
-        $data = file_get_contents('php://input');
-        $params = json_decode($data);
-
-        $filter = (array)$params;
-        $data = Yii::$app->navhelper->dropdown('BankBranches', 'Branch_Code', 'Branch_Name', $filter, ['Branch_Code', 'Bank_Name']);
+        $data = Yii::$app->navhelper->dropdown('PostalCodes', 'Code', 'City', [], ['Code', 'Country_Region_Code', 'County']);
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         return $data;
     }
-
 
     // VALUE COMMITMENT FUNCTIONS
 
@@ -363,5 +323,83 @@ class BankAccountController extends Controller
         } else {
             return ['note' => $result];
         }
+    }
+
+    public function actionUpload()
+    {
+
+        $targetPath = '';
+        if ($_FILES) {
+            $uploadedFile = $_FILES['attachment']['name'];
+            list($pref, $ext) = explode('.', $uploadedFile);
+            $targetPath = './uploads/' . Yii::$app->utility->processPath($pref) . '.' . $ext; // Create unique target upload path
+
+            // Create upload directory if it dnt exist.
+            if (!is_dir(dirname($targetPath))) {
+                FileHelper::createDirectory(dirname($targetPath));
+                chmod(dirname($targetPath), 0755);
+            }
+        }
+
+        // Upload
+        if (Yii::$app->request->isPost) {
+            $DocumentService = Yii::$app->params['ServiceName'][Yii::$app->request->post('DocumentService')];
+
+            $file = $_FILES['attachment']['tmp_name'];
+            //Return JSON
+            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            if (move_uploaded_file($file, $targetPath)) {
+                // Upload to sharepoint
+
+                return [
+                    'status' => 'success',
+                    'message' => 'File Uploaded Successfully',
+                    'filePath' => $targetPath
+                ];
+            } else {
+                return [
+                    'status' => 'error',
+                    'message' => 'Could not upload file at the moment.'
+                ];
+            }
+        }
+
+
+        // Update Nav -  Get Request
+        if (Yii::$app->request->isGet) {
+            $fileName = basename(Yii::$app->request->get('filePath'));
+
+            $DocumentService = Yii::$app->params['ServiceName'][Yii::$app->request->get('documentService')];
+            $AttachmentService = Yii::$app->params['ServiceName'][Yii::$app->request->get('Service')];
+            $type = html_entity_decode(Yii::$app->request->get('type'));
+            // $filter = ['Name' => $type, 'Supplier_No' => Yii::$app->user->identity->VendorId];
+            $data = [
+                'Supplier_No' => Yii::$app->user->identity->VendorId,
+                'Name' => $type,
+                'File_path' => \yii\helpers\Url::home(true) . 'uploads/' . $fileName,
+            ];
+
+
+
+            // Post to  Nav
+            $result = Yii::$app->navhelper->postData($AttachmentService, $data);
+
+            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            if (is_object($result)) {
+                return $result;
+            } else {
+                return $result;
+            }
+        }
+    }
+
+    public function actionRead($path)
+    {
+        $binary = file_get_contents($path);
+        $content = chunk_split(base64_encode($binary));
+        return $this->render('read', [
+            'report' => true,
+            'content' => $content
+        ]);
     }
 }

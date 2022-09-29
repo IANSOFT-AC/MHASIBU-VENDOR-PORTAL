@@ -152,7 +152,7 @@ class CompanyProfileController extends Controller
     {
         $model = new VendorCard();
         $service = Yii::$app->params['ServiceName']['VendorCard'];
-        $data = Yii::$app->navhelper->findOne($service, '', 'No', Yii::$app->user->identity->vendorNo);
+        $data = Yii::$app->navhelper->findOne($service, '', ['No' =>  Yii::$app->user->identity->VendorId]);
         Yii::$app->navhelper->loadmodel($data, $model);
 
         return $this->render('view', [
@@ -171,7 +171,7 @@ class CompanyProfileController extends Controller
     {
         $model = new VendorCard();
         $service = Yii::$app->params['ServiceName']['VendorCard'];
-        $data = Yii::$app->navhelper->findOne($service, '', 'No', Yii::$app->user->identity->vendorNo);
+        $data = Yii::$app->navhelper->findOne($service, '', 'No', Yii::$app->user->identity->VendorId);
         Yii::$app->navhelper->loadmodel($data, $model);
 
         return $this->render('submit', ['model' => $model]);
@@ -180,7 +180,7 @@ class CompanyProfileController extends Controller
     public function actionSubmitProfile()
     {
         $service =  Yii::$app->params['ServiceName']['PortalFactory'];
-        $payload = ['applicationNo' => Yii::$app->user->identity->vendorNo];
+        $payload = ['applicationNo' => Yii::$app->user->identity->VendorId];
 
         $result = Yii::$app->navhelper->codeunit($service, $payload, 'IanSubmitSupplierApp');
 

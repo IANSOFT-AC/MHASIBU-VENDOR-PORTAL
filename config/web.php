@@ -12,7 +12,7 @@ $config = [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
     ],
-    
+
     'components' => [
 
         'request' => [
@@ -34,9 +34,9 @@ $config = [
             'decimalSeparator' => ',',
             'thousandSeparator' => ' ',
             'currencyCode' => 'KES',
-       ],
+        ],
 
-       'navision' => [
+        'navision' => [
             'class' => 'app\Library\Navision',
         ],
 
@@ -51,7 +51,11 @@ $config = [
         'recruitment' => [
             'class' => 'app\Library\Recruitment',
         ],
-        
+
+        'utility' => [
+            'class' => 'app\Library\Utility',
+        ],
+
         'mailer' => [
             'class' => 'yii\swiftmailer\Mailer',
             'useFileTransport' => false,
@@ -63,7 +67,7 @@ $config = [
                 'username' => env('SMTP_USERNAME'),
                 'password' => env('SMTP_PASSWORD'),
 
-            ], 
+            ],
         ],
 
         'log' => [
@@ -76,18 +80,17 @@ $config = [
             ],
         ],
         'db' => $db,
-        
+
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
-            'rules' => [
-            ],
+            'rules' => [],
         ],
 
         'assetManager' => [
             'appendTimestamp' => true,
         ]
-        
+
     ],
     'params' => $params,
 ];

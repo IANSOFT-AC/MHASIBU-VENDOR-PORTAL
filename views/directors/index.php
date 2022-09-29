@@ -12,6 +12,22 @@ use yii\bootstrap4\Html;
 /* @var $this yii\web\View */
 
 $this->title = 'Company Directors';
+
+if (Yii::$app->session->hasFlash('success')) {
+    print ' <div class="alert alert-success alert-dismissable">
+                             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                    <h5><i class="icon fas fa-check"></i> Success!</h5>
+ ';
+    echo Yii::$app->session->getFlash('success');
+    print '</div>';
+} else if (Yii::$app->session->hasFlash('error')) {
+    print ' <div class="alert alert-danger alert-dismissable">
+                                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                    <h5><i class="icon fas fa-check"></i> Error!</h5>
+                                ';
+    echo Yii::$app->session->getFlash('error');
+    print '</div>';
+}
 ?>
 
 
@@ -56,12 +72,12 @@ $this->title = 'Company Directors';
                     <table class="table table-bordered">
                         <thead>
                             <tr>
-                                <td class="text text-info text-bold">Partner Name</td>
-                                <td class="text text-info text-bold">Partner_ID_No</td>
-                                <td class="text text-info text-bold">Patrner_Address</b></td>
-                                <td class="text text-info text-bold">Partner_Occupation</td>
-                                <td class="text text-info text-bold">PIN</td>
-                                <td class="text text-info text-bold">Mobile_No__x002B_254</td>
+                                <td class="text text-info text-bold">Name</td>
+                                <td class="text text-info text-bold">National ID. No.</td>
+                                <td class="text text-info text-bold">Address</b></td>
+                                <td class="text text-info text-bold">Occupation</td>
+                                <td class="text text-info text-bold">KRA PIN</td>
+                                <td class="text text-info text-bold">Mobile No.</td>
                                 <td class="text text-info text-bold">Gender</td>
                                 <td class="text text-info text-bold">Shares</td>
                                 <td class="text text-info text-bold">Nationality</td>
@@ -75,20 +91,17 @@ $this->title = 'Company Directors';
                             foreach ($data as $obj) :
                                 $deleteLink = Html::a('<i class="fa fa-trash"></i>', ['directors/delete', 'Key' => $obj->Key], [
                                     'class' => 'delete btn btn-outline-danger btn-xs',
-                                    'data' => [
-                                        'confirm' => 'Are you sure you wanna delete this record?'
-                                    ]
+                                    'data-key' => $obj->Key,
+                                    'data-service' => 'SupplierPartnerDetails'
                                 ]);
                             ?>
                                 <tr>
-
-
                                     <td data-key="<?= $obj->Key ?>" data-name="Partner_Name" data-service="SupplierPartnerDetails" ondblclick="addInput(this)"><?= !empty($obj->Partner_Name) ? $obj->Partner_Name : '' ?></td>
-                                    <td data-key="<?= $obj->Key ?>" data-name="Partner_ID_No" data-service="SupplierPartnerDetails" ondblclick="addInput(this)"><?= !empty($obj->Partner_ID_No) ? $obj->Partner_ID_No : '' ?></td>
+                                    <td data-key="<?= $obj->Key ?>" data-name="Partner_ID_No" data-service="SupplierPartnerDetails" ondblclick="addInput(this, 'number')"><?= !empty($obj->Partner_ID_No) ? $obj->Partner_ID_No : '' ?></td>
                                     <td data-key="<?= $obj->Key ?>" data-name="Patrner_Address" data-service="SupplierPartnerDetails" ondblclick="addInput(this)"><?= !empty($obj->Patrner_Address) ? $obj->Patrner_Address : '' ?></td>
                                     <td data-key="<?= $obj->Key ?>" data-name="Partner_Occupation" data-service="SupplierPartnerDetails" ondblclick="addInput(this)"><?= !empty($obj->Partner_Occupation) ? $obj->Partner_Occupation : '' ?></td>
                                     <td data-key="<?= $obj->Key ?>" data-name="PIN" data-service="SupplierPartnerDetails" ondblclick="addInput(this)"><?= !empty($obj->PIN) ? $obj->PIN : '' ?></td>
-                                    <td data-key="<?= $obj->Key ?>" data-name="Mobile_No__x002B_254" data-service="SupplierPartnerDetails" ondblclick="addInput(this)"><?= !empty($obj->Mobile_No__x002B_254) ? $obj->Mobile_No__x002B_254 : '' ?></td>
+                                    <td data-key="<?= $obj->Key ?>" data-name="Mobile_No__x002B_254" data-service="SupplierPartnerDetails" ondblclick="addInput(this, 'tel')"><?= !empty($obj->Mobile_No__x002B_254) ? $obj->Mobile_No__x002B_254 : '' ?></td>
                                     <td data-key="<?= $obj->Key ?>" data-name="Gender" data-service="SupplierPartnerDetails" ondblclick="addDropDown(this,'gender')"><?= !empty($obj->Gender) ? $obj->Gender : '' ?></td>
                                     <td data-key="<?= $obj->Key ?>" data-name="Shares" data-service="SupplierPartnerDetails" ondblclick="addInput(this, 'number')"><?= !empty($obj->Shares) ? $obj->Shares : '' ?></td>
                                     <td data-key="<?= $obj->Key ?>" data-name="Nationality" data-service="SupplierPartnerDetails" ondblclick="addDropDown(this,'countries')"><?= !empty($obj->Nationality) ? $obj->Nationality : '' ?></td>

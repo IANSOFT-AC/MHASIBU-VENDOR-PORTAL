@@ -198,11 +198,13 @@ class DirectorsController extends Controller
         $result = Yii::$app->navhelper->deleteData($service, Yii::$app->request->get('Key'));
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         if (!is_string($result)) {
-
-            return ['note' => '<div class="alert alert-success">Record Purged Successfully</div>'];
+            //return ['note' => '<div class="alert alert-success">Record Purged Successfully</div>'];
+            Yii::$app->session->setFlash("success", 'Record Purged Successfully', true);
         } else {
-            return ['note' => '<div class="alert alert-danger">Error Purging Record: ' . $result . '</div>'];
+            Yii::$app->session->setFlash("success", 'Record Purged Successfully', true);
+            // return ['note' => '<div class="alert alert-danger">Error Purging Record: ' . $result . '</div>'];
         }
+        return;
     }
 
 

@@ -9,7 +9,7 @@ const Toast = Swal.mixin({
   toast: true,
   position: 'top-end',
   showConfirmButton: false,
-  timer: 4000
+  timer: 5000
 });
 
 function closeInput(elm) {
@@ -382,10 +382,14 @@ function requestStateUpdater(fieldParentNode, notificationType, msg = '') {
 async function globalUpload(attachmentService, entity, fieldName, documentService = false) {
   const formField = '.field-' + entity.toLowerCase() + '-' + fieldName.toLowerCase();
   const model = entity.toLowerCase();
-  const key = document.querySelector(`#${model}-key`).value;
+  const key = '';//document.querySelector(`#${model}-key`).value;
   const fileInput = document.querySelector(`#${model}-${fieldName}`);
   let endPoint = './upload/';
   let error = false;
+  let data = _('attachment-attachment').dataset;
+
+  console.log(`data .......`);
+  console.log(data.name);
   const navPayload = {
     "Key": key,
     "Service": attachmentService,
@@ -427,7 +431,7 @@ async function globalUpload(attachmentService, entity, fieldName, documentServic
         method: "POST",
         body: formData,
         headers: new Headers({
-          Origin: 'http://localhost:2026/'
+          Origin: 'http://localhost:8062/'
         })
       });
 
@@ -442,11 +446,12 @@ async function globalUpload(attachmentService, entity, fieldName, documentServic
 
 
     // Do a Nav Request
-    endPoint = `${endPoint}?Key=${navPayload.Key}&Service=${navPayload.Service}&filePath=${filePath}&documentService=${navPayload.documentService}`
+    let UploadType = data.name;
+    endPoint = `${endPoint}?Key=${navPayload.Key}&Service=${navPayload.Service}&filePath=${filePath}&documentService=${navPayload.documentService}&type=${UploadType}`
     const navReq = await fetch(endPoint, {
       method: "GET",
       headers: new Headers({
-        Origin: 'http://localhost:80/'
+        Origin: 'http://localhost:8062/'
       })
     });
 
@@ -581,7 +586,7 @@ async function globalUploadMultiple(attachmentService, entity, route, documentSe
       // Reload
       setTimeout(() => {
         console.log(`Trying to reload.`);
-        location.reload(true)
+        //location.reload(true)
       }, 1000)
     } else {
       Toast.fire({
@@ -619,14 +624,29 @@ $('.delete').on('click', function (e) {
     $(this).text('Deleting...');
     $(this).attr('disabled', true);
     $.get(url, payload).done((msg) => {
-      console.log(typeof msg.result);
-      if (typeof msg.result === 'string') {
-        alert(msg['result']);
-      }
+      Toast.fire({
+        type: 'success',
+        title: 'Operation completed successfully.'
+      });
+
       setTimeout(() => {
         location.reload(true);
-      }, 100);
-    });
+      }, 1200);
+    })
+      .fail(function (xhr, status, error) {
+        console.log(xhr);
+        $('.delete').text('Delete');
+
+        Toast.fire({
+          type: 'error',
+          title: status + ' : ' + error
+        });
+
+        setTimeout(() => {
+          location.reload(true);
+        }, 1200);
+
+      });
   }
 
 });
