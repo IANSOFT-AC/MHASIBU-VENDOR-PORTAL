@@ -1,7 +1,7 @@
-DB_SERVER = 'SSMSSHQDBSVR'
-DatabaseName = 'MHASIBU'
-DB_USER = MembersPortal
-DB_PASSWORD = "MembersPortal#LiveManenos2021"
+DB_INSTANCE=SSMSSHQDBSVR
+DB_NAME=MHASIBU
+DB_USER=sa
+DB_PASSWORD=200
 NavisionUsername = SaccoMembersPortal
 NavisionPassword = 'cu@Wine1986#*'
 
