@@ -1,13 +1,21 @@
-DB_SERVER = 'MHASIBUBC//DYN365BCTEST'  //'SSMSSHQDBSVR'
-DatabaseName = MHASIBUNEWTEST  //'MHASIBU'
-DB_USER = sa //MembersPortal
-DB_PASSWORD = Qwerty123$ //"MembersPortal#LiveManenos2021"
-NavisionUsername = Developer //SaccoMembersPortal
-NavisionPassword = Qwerty123$ //'cu@Wine1986#*'
+DB_SERVER = 'MHASIBUBC//DYN365BCTEST'  
+DatabaseName = MHASIBUNEWTEST  
 
-server = mhasibubc.mhasibu.com//'ssmsshqappsvr.mhasibu.com'
-WebServicePort = 5054 // '10047'
-ServerInstance = Test// 'BC140'
+DB_INSTANCE='MHASIBUBC\\DYN365BCTEST' 
+DB_NAME=MHASIBUNEWTEST
+
+
+DB_USER = sa 
+DB_PASSWORD = Qwerty123$ 
+NavisionUsername = Developer 
+NavisionPassword = Qwerty123$ 
+
+NAV_USERNAME=Developer
+NAV_PASSWORD= Qwerty123$
+
+server = mhasibubc.mhasibu.com
+WebServicePort = 5054 
+ServerInstance = Test
 CompanyName= 'Mhasibu'
 DBCompanyName = 'Mhasibu$'
 

@@ -9,14 +9,14 @@ return [
     'DBCompanyName' => env('DBCompanyName'),
 
     'powered' => 'Iansoft Ltd',
-    'NavisionUsername' => env('NavisionUsername'),
-    'NavisionPassword' => env('NavisionPassword'),
+    'NavisionUsername' => env('NAV_USERNAME'),
+    'NavisionPassword' => env('NAV_PASSWORD'),
 
-    'server' => env('server'),
-    'WebServicePort' => env('WebServicePort'),
-    'ServerInstance' => env('ServerInstance'),
-    'ServiceCompanyName' => env('CompanyName'),
-    'DBCompanyName' => env('DBCompanyName'),
+    'server' => env('SERVER'),
+    'WebServicePort' => env('WEBSERVERPORT'),
+    'ServerInstance' => env('SERVERINSTANCE'),
+    'ServiceCompanyName' => env('COMPANYNAME'),
+    'DBCompanyName' => env('DBCOMPANYNAME'),
 
     'codeUnits' => [
         'PortalFactory' => 'PortalFactory', // 50062
