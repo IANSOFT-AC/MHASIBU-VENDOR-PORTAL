@@ -172,6 +172,8 @@ class Navhelper extends Component
         $url = new Services($service);
         $soapWsdl = $url->getUrl();
 
+        //  Yii::$app->recruitment->printrr($soapWsdl);
+
         $entry = (object)[];
         $entryID = $service;
         foreach ($data as $key => $value) {

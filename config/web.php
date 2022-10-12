@@ -5,7 +5,7 @@ $db = require __DIR__ . '/db.php';
 
 $config = [
     'id' => 'basic',
-    'name' => 'Suppliers Portal',
+    'name' => 'TEST Suppliers Portal',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'aliases' => [
@@ -58,7 +58,7 @@ $config = [
 
         'mailer' => [
             'class' => 'yii\swiftmailer\Mailer',
-            'useFileTransport' => false,
+            'useFileTransport' => true,
             'transport' => [
                 'class' => 'Swift_SmtpTransport',
                 'encryption' => env('SMTP_ENCRYPTION'),

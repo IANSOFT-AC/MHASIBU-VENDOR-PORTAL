@@ -47,7 +47,7 @@ $absoluteUrl = \yii\helpers\Url::home(true);
     <div class="container">
         <a href="/" class="navbar-brand">
             <img src="<?= $webroot ?>/images/logo.png" alt="MHASIBU LOGO" class="image" height="70px">
-            <h3 class="d-inline align-middle">Supplier Portal</h3>
+            <h3 class="d-inline align-middle"><?= Yii::$app->name; ?></h3>
         </a>
    
         <button class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">

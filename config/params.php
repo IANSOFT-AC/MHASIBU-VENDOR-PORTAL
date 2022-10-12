@@ -49,6 +49,14 @@ return [
         'Countries' => 'Countries', //10
         'SupplierAttachments' => 'SupplierAttachments', //66063
         'SupplierAttachmentTypes' => 'SupplierAttachmentTypes', //66062
+
+        'advertisedQuotationsList' => 'advertisedQuotationsList', //67033
+        'quotationCard' => 'quotationCard', //67031 
+        'quotationLines' => 'quotationLines', // 67032
+
+        'advertisedTenderList' => 'advertisedTenderList', //67013
+        'tenderCard' => 'tenderCard', //67011
+        'tenderLines' => 'tenderLines', //67012 
     ],
 
 ];
