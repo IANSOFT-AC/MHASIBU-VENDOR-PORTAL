@@ -14,4 +14,13 @@ class Supplier extends ActiveRecord
     {
         return '{{%user}}';
     }
+
+    // Get Generated Vendor No
+
+    public function getVendorNo()
+    {
+        $SupplierNo =  Yii::$app->user->identity->VendorId;
+        $vendor = Yii::$app->navhelper->findOne('VendorCard',[],['No' =>  $SupplierNo]);
+        return $vendor->Generated_Vendor_No ?? null;
+    }
 }

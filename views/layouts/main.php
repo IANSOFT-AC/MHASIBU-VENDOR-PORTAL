@@ -189,11 +189,11 @@ $vendor = '';// (!Yii::$app->user->isGuest && Yii::$app->user->identity->VendorI
 
                         <div class="dropdown-divider"></div>
 
-                        <?= Html::a('<i class="fas fa-user"></i> Update Profile', $absoluteUrl.'site/update',['class'=> 'dropdown-item']); ?>
+                        <?= Html::a('<i class="fas fa-user"></i> Update Profile', $absoluteUrl.'company-profile/update',['class'=> 'dropdown-item']); ?>
 
                         <div class="dropdown-divider"></div>
 
-                         <?= Html::a('<i class="fas fa-file-pdf"></i> Supplier Documents', $absoluteUrl.'site/uploads',['class'=> 'dropdown-item']); ?>
+                         <?= Html::a('<i class="fas fa-file-pdf"></i> Supplier Documents', $absoluteUrl.'attachments',['class'=> 'dropdown-item']); ?>
 
                         <div class="dropdown-divider"></div>
 
@@ -262,8 +262,8 @@ $vendor = '';// (!Yii::$app->user->isGuest && Yii::$app->user->identity->VendorI
                                 </li>
 
                          <!--Payroll reports -->
-                                 <li class="nav-item has-treeview <?= currentCtrl(['site'])?'menu-open':'' ?>">
-                                    <a href="#" class="nav-link <?= currentCtrl(['site'])?'active':'' ?>">
+                                 <li class="nav-item has-treeview <?= currentCtrl(['tenders'])?'menu-open':'' ?>">
+                                    <a href="#" class="nav-link <?= currentCtrl(['tenders'])?'active':'' ?>">
                                         <i class="nav-icon fa fa-file-invoice-dollar"></i>
                                         <p>
                                             Tenders
@@ -273,7 +273,7 @@ $vendor = '';// (!Yii::$app->user->isGuest && Yii::$app->user->identity->VendorI
                                     </a>
                                     <ul class="nav nav-treeview">
                                         <li class="nav-item">
-                                            <a href="<?= $absoluteUrl ?>site/tenders" class="nav-link <?= currentaction('site','tenders')?'active':'' ?>">
+                                            <a href="<?= $absoluteUrl ?>tenders" class="nav-link <?= currentaction('tenders','index')?'active':'' ?>">
                                                 <i class="fa fa-check-square nav-icon"></i>
                                                 <p>Advertised Tenders</p>
                                             </a>

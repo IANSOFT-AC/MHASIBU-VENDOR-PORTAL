@@ -11,8 +11,8 @@
 
 /* @var $this yii\web\View */
 
-$this->title = 'HRMIS - Document Printout';
-$this->params['breadcrumbs'][] = ['label' => 'imprest', 'url' => ['index']];
+$this->title = 'Vendors - Document Reader';
+$this->params['breadcrumbs'][] = ['label' => 'Attachments', 'url' => ['index']];
 //$this->params['breadcrumbs'][] = ['label' => 'printout', 'url' => ['print-imprest', 'DocNo' => $_GET['No']]];
 ?>
 

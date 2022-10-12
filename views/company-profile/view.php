@@ -201,9 +201,7 @@ if(Yii::$app->session->hasFlash('success')){
 	<!-- Supplier Uploads -->
 		
 
-        <div class="form-group">
-                    <?= Html::Button('Ok', ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
-        </div>
+       
 
         <?php ActiveForm::end(); ?>
     </div>
