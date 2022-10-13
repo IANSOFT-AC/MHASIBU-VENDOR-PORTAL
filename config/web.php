@@ -27,6 +27,8 @@ $config = [
         'user' => [
             'identityClass' => 'app\models\User',
             'enableAutoLogin' => false,
+            'identityCookie' => ['name' => '_identity-app', 'httpOnly' => true],
+            'authTimeout' => 60*60,
         ],
 
         'formatter' => [

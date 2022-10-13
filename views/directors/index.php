@@ -7,6 +7,7 @@
  * Time: 2:08 PM
  */
 
+use app\models\Supplier;
 use yii\bootstrap4\Html;
 
 /* @var $this yii\web\View */
@@ -42,12 +43,12 @@ if (Yii::$app->session->hasFlash('success')) {
 <!--END THE STEPS THING--->
 
 
-
+<?php if((property_exists(Supplier::Vendor(),'Registration_Status') &&  Supplier::Vendor()->Registration_Status == 'New')): ?>
 <div class="row">
     <div class="col-md-12">
         <div class="card">
             <div class="card-body">
-                <?= Html::a('Add Director', ['add-line'], [
+                <?=  Html::a('Add Director', ['add-line'], [
                     'class' => 'add btn btn-primary btn-md mr-2 ',
                     'data-no' => Yii::$app->user->identity->VendorId,
                     'data-service' => 'SupplierPartnerDetails'
@@ -56,6 +57,8 @@ if (Yii::$app->session->hasFlash('success')) {
         </div>
     </div>
 </div>
+
+<?php endif; ?>
 
 
 

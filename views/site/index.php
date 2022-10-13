@@ -2,6 +2,7 @@
 
 /* @var $this yii\web\View */
 
+use app\models\Supplier;
 use yii\helpers\Html;
 
 $webroot = Yii::getAlias(@$webroot);
@@ -31,11 +32,15 @@ $this->title = Yii::$app->name;
 
     <div class="body-content">
 
+    <?php if(!Supplier::VendorNo()):  ?>
+
         <div class="row my-5">
             <div class="col-md-10 text-center offset-md-1">
                 <div class="alert alert-primary">You are not a registered supplier, click button on the right to complete and submit a supplier profile</div>
             </div>
         </div>
+
+    <?php endif; ?>
 
         <div class="row">
             <div class="col-md-10 text-center offset-md-1">
@@ -46,8 +51,10 @@ $this->title = Yii::$app->name;
 
                     <div class="showcase-btn my-auto">
 
+                    <?php // Yii::$app->recruitment->printrr(Supplier::Vendor()->Registration_Status); ?>
+
                         <?php if (Yii::$app->user->identity->VendorId) : ?>
-                            <?= Html::a('Update Supplier Profile', yii\helpers\Url::toRoute('./company-profile/update'), ['class' => 'btn btn-lg btn-outline-primary']); ?>
+                            <?= Html::a('View Supplier Profile', yii\helpers\Url::toRoute('./company-profile/update'), ['class' => 'btn btn-lg btn-outline-primary']); ?>
                         <?php else : ?>
                             <?= Html::a('Create Supplier Profile', yii\helpers\Url::toRoute('./company-profile/create'), ['class' => 'btn btn-lg btn-outline-primary']); ?>
                         <?php endif; ?>

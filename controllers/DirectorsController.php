@@ -33,10 +33,7 @@ class DirectorsController extends Controller
                     [
                         'actions' => ['logout', 'index'],
                         'allow' => true,
-                        //'roles' => ['@'],
-                        'matchCallback' => function ($rule, $action) {
-                            return (Yii::$app->session->has('HRUSER') || !Yii::$app->user->isGuest);
-                        },
+                        'roles' => ['@'],
                     ],
                 ],
             ],

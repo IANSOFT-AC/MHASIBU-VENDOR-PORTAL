@@ -16,6 +16,7 @@ use frontend\models\Leave;
 use yii\web\Response;
 use app\models\MemberApplicationCard;
 use app\models\Quotation;
+use app\models\Supplier;
 
 class QuotationsController extends Controller
 {
@@ -24,7 +25,7 @@ class QuotationsController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout', 'signup', 'index'],
+                'only' => ['logout', 'signup', 'index','quote'],
                 'rules' => [
                     [
                         'actions' => ['signup'],
@@ -32,12 +33,10 @@ class QuotationsController extends Controller
                         'roles' => ['?'],
                     ],
                     [
-                        'actions' => ['logout', 'index'],
+                        'actions' => ['logout', 'index','quote'],
                         'allow' => true,
-                        //'roles' => ['@'],
-                        'matchCallback' => function ($rule, $action) {
-                            return (Yii::$app->session->has('HRUSER') || !Yii::$app->user->isGuest);
-                        },
+                        'roles' => ['@'],
+                        
                     ],
                 ],
             ],
@@ -224,7 +223,7 @@ class QuotationsController extends Controller
     {
         $service = Yii::$app->params['ServiceName']['advertisedQuotationsList'];
         $filter = [
-            //'Vendor_No' => Yii::$app->user->identity->VendorId,
+            //'Vendor_No' => Supplier::VendorNo(),
         ];
         $results = Yii::$app->navhelper->getData($service, $filter);
 
@@ -241,6 +240,7 @@ class QuotationsController extends Controller
                 $link = $updateLink = $view ='';
 
                 $viewLink = Html::a('<i class="fas fa-eye"></i>', ['view', 'Key' => $kin->Key], ['class' => 'update btn btn-info btn-md', 'title' => 'Update Record.']);
+                $RespondLink = Supplier::IsBidder($kin->No) ? Html::a('<i class="fas fa-coins"></i>', ['quote', 'quoteNo' => $kin->No], ['class' => 'btn btn-outline-primary mx-2 btn-md', 'title' => 'Quote for Individual Items.']):'';
                 $deletelink = Html::a('<i class="fas fa-trash"></i>', ['delete', 'Key' => $kin->Key], ['class' => 'mx-2 btn btn-danger btn-md delete', 'title' => 'Purge a record.']);
 
 
@@ -248,7 +248,7 @@ class QuotationsController extends Controller
                     'No' => $kin->No,
                     'Title' => !empty($kin->Title) ? $kin->Title : '',
                     'Status' => !empty($kin->Status) ? $kin->Status : '',
-                    'action' => $viewLink
+                    'action' => $viewLink.$RespondLink
                 ];
             }
         }
@@ -257,6 +257,50 @@ class QuotationsController extends Controller
 
         return $result;
     }
+
+    // Vendor Quoted Amount List
+
+    public function actionQuote($quoteNo)
+    {
+        $service = Yii::$app->params['ServiceName']['VendorQuotedAmount'];
+        $filter = [
+            'Quote_No' =>  $quoteNo,
+            'Vendor_No' => Supplier::VendorNo()
+        ];  
+
+         //Yii::$app->recruitment->printrr($filter);
+         $result = Yii::$app->navhelper->getData($service, $filter);
+
+         return $this->render('quote', [
+            'data' => $result,
+            'title' => 'Quote Per Item'
+         ]);
+    }
+
+    // Submit the quotes
+
+    public function actionSubmit($quoteNo, $vendorNo)
+    {
+        $service = Yii::$app->params['ServiceName']['PortalFactory'];
+
+        $data = [
+            'quoteNo' => $quoteNo,
+            'vendorNo' => $vendorNo
+        ];
+
+
+        $result = Yii::$app->navhelper->codeunit($service, $data, 'IanSubmitVendorBids');
+
+        if (($result)) {
+            Yii::$app->session->setFlash('success', 'Quote Submitted Successfully.', true);
+            return $this->redirect(['index']);
+        } else {
+
+            Yii::$app->session->setFlash('error', 'Error submitting quote  : ' . $result);
+            return $this->redirect(['index']);
+        }
+    }
+
 
     public function actionBanks()
     {

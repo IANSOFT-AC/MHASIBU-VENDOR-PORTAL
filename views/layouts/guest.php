@@ -58,7 +58,7 @@ $absoluteUrl = \yii\helpers\Url::home(true);
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
                     <!-- <a href="#" class="nav-link active">Renders</a> -->
-                    <?= Html::a('Tenders',['site/tenders'],['class' => 'nav-link active'])?>
+                    <?= Html::a('Tenders',['./tenders'],['class' => 'nav-link active'])?>
                 </li>
                  <!-- <li class="nav-item">
                     <a href="#" class="nav-link">Contracts</a>

@@ -2,8 +2,8 @@
 
 return [
     'user.passwordResetTokenExpire' => '3600*24',
-    'adminEmail' => 'admin@example.com',
-    'senderEmail' => 'jimkinyua25@gmail.com',
+    'adminEmail' => 'mhasibusaccoltd@gmail.com',
+    'senderEmail' => 'mhasibusaccoltd@gmail.com',
     'senderName' => 'Supplier Portal Test',
     'productVendor' => env('PRODUCT_VENDOR'),
     'DBCompanyName' => env('DBCompanyName'),
@@ -53,6 +53,8 @@ return [
         'advertisedQuotationsList' => 'advertisedQuotationsList', //67033
         'quotationCard' => 'quotationCard', //67031 
         'quotationLines' => 'quotationLines', // 67032
+        'quotationBidders' => 'quotationBidders', //67036
+        'VendorQuotedAmount' => 'VendorQuotedAmount', // 67037
 
         'advertisedTenderList' => 'advertisedTenderList', //67013
         'tenderCard' => 'tenderCard', //67011

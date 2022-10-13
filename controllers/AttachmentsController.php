@@ -24,7 +24,7 @@ class AttachmentsController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout', 'signup', 'index'],
+                'only' => ['logout', 'signup', 'index','read'],
                 'rules' => [
                     [
                         'actions' => ['signup'],
@@ -32,12 +32,9 @@ class AttachmentsController extends Controller
                         'roles' => ['?'],
                     ],
                     [
-                        'actions' => ['logout', 'index'],
+                        'actions' => ['logout', 'index','read'],
                         'allow' => true,
-                        'roles' => ['@'],
-                        // 'matchCallback' => function ($rule, $action) {
-                        //     return (Yii::$app->session->has('HRUSER') || !Yii::$app->user->isGuest);
-                        // },
+                        'roles' => ['@']
                     ],
                 ],
             ],

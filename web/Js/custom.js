@@ -22,7 +22,10 @@ function closeInput(elm) {
 
 
   if (child.type == 'checkbox') {
-    value = (child.checked) ? true : false;
+    value = (child.checked) ? 1 : 0;
+
+    console.log('Checkbox check state');
+    console.log(child.checked);
   }
 
   /** Finish handling checkbox state */

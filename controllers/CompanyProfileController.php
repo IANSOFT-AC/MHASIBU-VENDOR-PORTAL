@@ -28,7 +28,7 @@ class CompanyProfileController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout', 'index',],
+                'only' => ['logout', 'index','update'],
                 'rules' => [
                     [
                         'actions' => ['signup', 'setfield'],
@@ -36,7 +36,7 @@ class CompanyProfileController extends Controller
                         'roles' => ['?'],
                     ],
                     [
-                        'actions' => ['logout', 'index',],
+                        'actions' => ['logout', 'index','update'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -103,10 +103,6 @@ class CompanyProfileController extends Controller
             if (Yii::$app->user->identity->VendorId) {
                 return $this->redirect(['update']);
             }
-
-
-
-
 
             Yii::$app->navhelper->loadmodel($request, $model);
 

@@ -7,6 +7,7 @@
  * Time: 2:08 PM
  */
 
+use app\models\Supplier;
 use yii\bootstrap4\ActiveForm;
 use yii\bootstrap4\Html;
 use yii\bootstrap\Html as BootstrapHtml;
@@ -29,7 +30,7 @@ $this->title = 'Supplier Additional Addresses';
 <!--END THE STEPS THING--->
 
 
-
+<?php if((property_exists(Supplier::Vendor(),'Registration_Status') &&  Supplier::Vendor()->Registration_Status == 'New')): ?>
 <div class="row">
     <div class="col-md-12">
         <div class="card">
@@ -42,6 +43,8 @@ $this->title = 'Supplier Additional Addresses';
         </div>
     </div>
 </div>
+
+<?php endif; ?>
 
 
 

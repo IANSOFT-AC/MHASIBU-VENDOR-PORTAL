@@ -7,6 +7,8 @@
  * Time: 12:17 PM
  */
 
+use app\models\Supplier;
+
 $profileAction = Yii::$app->user->identity->id;
 
 //var_dump(Yii::$app->recruitment->hasProfile(Yii::$app->session->get('ProfileID')));
@@ -185,6 +187,6 @@ $profileAction = Yii::$app->user->identity->id;
                     <a href="<?= Yii::$app->recruitment->absoluteUrl() . 'bank-account/index' ?>" <?= Yii::$app->recruitment->currentaction('bank-account', 'index') ? 'class="active"' : '' ?>>Supplier Bank Accounts</a>
                     <a href="<?= Yii::$app->recruitment->absoluteUrl() . 'addresses/index' ?>" <?= Yii::$app->recruitment->currentaction('addresses', 'index') ? 'class="active"' : '' ?>>Additional Addresses</a>
                     <a href="<?= Yii::$app->recruitment->absoluteUrl() . 'attachments/index' ?>" <?= Yii::$app->recruitment->currentaction('attachments', 'index') ? 'class="active"' : '' ?>>Attachments</a>
-                    <a href="<?= Yii::$app->recruitment->absoluteUrl() . 'company-profile/submit' ?>" <?= Yii::$app->recruitment->currentaction('company-profile', 'submit') ? 'class="active"' : '' ?>>Submit Profile</a>
+                    <?php if(property_exists(Supplier::Vendor(),'Registration_Status') &&  Supplier::Vendor()->Registration_Status == 'New'){ ?><a href="<?= Yii::$app->recruitment->absoluteUrl() . 'company-profile/submit' ?>" <?= Yii::$app->recruitment->currentaction('company-profile', 'submit') ? 'class="active"' : '' ?>>Submit Profile</a> <?php } ?>
 
                 </div>

@@ -206,13 +206,13 @@ use yii\bootstrap4\ActiveForm;
         <div class="card">
             <div class="card-header">
                 <div class="card-tools my-2 px-3">
-                    <span class="text text-info border border-info p-2 rounded">To Update line values, double click on cells whose column headers are colored blue.</span>
+                    <!-- <span class="text text-info border border-info p-2 rounded">To Update line values, double click on cells whose column headers are colored blue.</span> -->
                 </div>
             </div>
 
             <div class="card-body">
 
-                <?php if (property_exists($document->Quotation_Lines_Line, 'Quotation_Lines_Line')) { //show Lines 
+                <?php if (property_exists($document->Tender_Lines_Line, 'Tender_Lines_Line')) { //show Lines 
                 ?>
 
                     <div class="table-responsive">
@@ -223,7 +223,7 @@ use yii\bootstrap4\ActiveForm;
                                    <td class="text-bold">Description</td>
                                    <td class="text-bold">Unit of Measure</td>
                                    <td class="text-bold">Quantity</td>
-                                   <td class="text-bold text-primary">Unit Price</td>
+                                   <td class="text-bold ">Unit Price</td>
                                    <td class="text-bold">Total Amount</td>
                                    <td class="text-bold">Location</td>
                                    <td class="text-bold">Type</td>
@@ -235,7 +235,7 @@ use yii\bootstrap4\ActiveForm;
                                 <?php
                                 
 
-                                foreach ($document->Quotation_Lines_Line->Quotation_Lines_Line   as $obj) :
+                                foreach ($document->Tender_Lines_Line->Tender_Lines_Line   as $obj) :
                                    
                                 ?>
                                     <tr>
@@ -243,7 +243,7 @@ use yii\bootstrap4\ActiveForm;
                                         <td class="Description"><?= !empty($obj->Description) ? $obj->Description : '' ?></td>
                                         <td class="Unit_of_Measure"><?= !empty($obj->Unit_of_Measure) ? $obj->Unit_of_Measure : '' ?></td>
                                         <td data-key="<?= $obj->Key ?>" data-name="Quantity" data-service="quotationLines"><?= !empty($obj->Quantity) ? $obj->Quantity : '' ?></td>
-                                        <td data-validate="Total_Amount" data-key="<?= $obj->Key ?>" data-name="Unit_Price" data-service="quotationLines" ondblclick="addInput(this,'number')" ><?= !empty($obj->Unit_Price) ? $obj->Unit_Price : '' ?></td>
+                                        <td data-validate="Total_Amount" data-key="<?= $obj->Key ?>" data-name="Unit_Price" data-service="quotationLines" ><?= !empty($obj->Unit_Price) ? $obj->Unit_Price : '' ?></td>
                                         <td class="Total_Amount"><?= !empty($obj->Total_Amount) ? $obj->Total_Amount : '' ?></td>
                                         <td data-key="<?= $obj->Key ?>" data-name="Location" data-service="quotationLines" ><?= !empty($obj->Location) ? $obj->Location : '' ?></td>
                                         <td data-key="<?= $obj->Key ?>" data-name="Type" data-service="quotationLines"><?= !empty($obj->Type) ? $obj->Type : '' ?></td>

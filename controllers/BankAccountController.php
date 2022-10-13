@@ -34,10 +34,8 @@ class BankAccountController extends Controller
                     [
                         'actions' => ['logout', 'index'],
                         'allow' => true,
-                        //'roles' => ['@'],
-                        'matchCallback' => function ($rule, $action) {
-                            return (Yii::$app->session->has('HRUSER') || !Yii::$app->user->isGuest);
-                        },
+                        'roles' => ['@'],
+                        
                     ],
                 ],
             ],
@@ -198,29 +196,7 @@ class BankAccountController extends Controller
     }
 
 
-    public function actionView($ApplicationNo)
-    {
-        $service = Yii::$app->params['ServiceName']['leaveApplicationCard'];
-        $leaveTypes = $this->getLeaveTypes();
-        $employees = $this->getEmployees();
-
-        $filter = [
-            'Application_No' => $ApplicationNo
-        ];
-
-        $leave = Yii::$app->navhelper->getData($service, $filter);
-
-        //load nav result to model
-        $leaveModel = new AccountSignatoriesList();
-        $model = $this->loadtomodel($leave[0], $leaveModel);
-
-
-        return $this->render('view', [
-            'model' => $model,
-            'leaveTypes' => ArrayHelper::map($leaveTypes, 'Code', 'Description'),
-            'relievers' => ArrayHelper::map($employees, 'No', 'Full_Name'),
-        ]);
-    }
+   
 
 
 
