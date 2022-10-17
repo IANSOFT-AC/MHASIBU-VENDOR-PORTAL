@@ -53,7 +53,7 @@ $this->title = Yii::$app->name;
 
                     <?php // Yii::$app->recruitment->printrr(Supplier::Vendor()->Registration_Status); ?>
 
-                        <?php if (Yii::$app->user->identity->VendorId) : ?>
+                        <?php if (!is_null(Yii::$app->user->identity->VendorId)) : ?>
                             <?= Html::a('View Supplier Profile', yii\helpers\Url::toRoute('./company-profile/update'), ['class' => 'btn btn-lg btn-outline-primary']); ?>
                         <?php else : ?>
                             <?= Html::a('Create Supplier Profile', yii\helpers\Url::toRoute('./company-profile/create'), ['class' => 'btn btn-lg btn-outline-primary']); ?>

@@ -15,6 +15,7 @@ use yii\bootstrap4\Html as Bootstrap4Html;
                                    <td class="text-bold ">VAT_Amount</td>
                                    <td class="text-bold ">Lead_Time</td>
                                    <td class="text-bold">Quantity</td>                                  
+                                   <td class="text-bold">Total Amount</td>                                  
                                    <td class="text-bold">Submitted</td>                                  
 
                                 </tr>
@@ -34,6 +35,7 @@ use yii\bootstrap4\Html as Bootstrap4Html;
                                         <td data-key="<?= $obj->Key ?>" data-name="VAT_Amount" data-service="VendorQuotedAmount"  ><?= !empty($obj->VAT_Amount) ? $obj->VAT_Amount : '' ?></td>
                                         <td data-key="<?= $obj->Key ?>" data-name="Lead_Time" data-service="VendorQuotedAmount" ><?= !empty($obj->Lead_Time) ? $obj->Lead_Time : '' ?></td>
                                         <td data-key="<?= $obj->Key ?>" data-name="Quantity" data-service="VendorQuotedAmount" ><?= !empty($obj->Quantity) ? $obj->Quantity : '' ?></td>
+                                        <td><?= !empty($obj->Total_Amount) ? Yii::$app->formatter->asCurrency($obj->Total_Amount,'Ks.') : '' ?></td>
                                         <td><?= Bootstrap4Html::checkbox('Submitted', $obj->Submitted,['readonly' => true,'disabled' => true]) ?></td>
                                     </tr>
                                 <?php endforeach; ?>

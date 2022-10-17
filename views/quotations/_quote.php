@@ -15,6 +15,7 @@ use yii\bootstrap4\Html as Bootstrap4Html;
                                    <td class="text-bold ">VAT_Amount</td>
                                    <td class="text-bold text-primary">Lead_Time</td>
                                    <td class="text-bold">Quantity</td>                                  
+                                   <td class="text-bold">Total Amount</td>                                  
                                    <td class="text-bold">Submitted</td>                                  
 
                                 </tr>
@@ -32,8 +33,9 @@ use yii\bootstrap4\Html as Bootstrap4Html;
                                         <td data-key="<?= $obj->Key ?>" data-name="Quoted_Amount" data-service="VendorQuotedAmount" ondblclick="addInput(this,'number')" ><?= !empty($obj->Quoted_Amount) ? $obj->Quoted_Amount : '' ?></td>
                                         <td data-validate="VAT_Amount" data-key="<?= $obj->Key ?>" data-name="VAT_Inclusive" data-service="VendorQuotedAmount" ondblclick="addInput(this,'checkbox')" ><?= !empty($obj->VAT_Inclusive) ? $obj->VAT_Inclusive : '' ?></td>
                                         <td class="VAT_Amount" data-key="<?= $obj->Key ?>" data-name="VAT_Amount" data-service="VendorQuotedAmount"><?= !empty($obj->VAT_Amount) ? $obj->VAT_Amount : '' ?></td>
-                                        <td data-key="<?= $obj->Key ?>" data-name="Lead_Time" data-service="VendorQuotedAmount" ondblclick="addInput(this, 'number')" ><?= !empty($obj->Lead_Time) ? $obj->Lead_Time : '' ?></td>
+                                        <td data-validate="Total_Amount" data-key="<?= $obj->Key ?>" data-name="Lead_Time" data-service="VendorQuotedAmount" ondblclick="addInput(this, 'number')" ><?= !empty($obj->Lead_Time) ? $obj->Lead_Time : '' ?></td>
                                         <td data-key="<?= $obj->Key ?>" data-name="Quantity" data-service="VendorQuotedAmount" ><?= !empty($obj->Quantity) ? $obj->Quantity : '' ?></td>
+                                        <td class="Total_Amount"><?= !empty($obj->Total_Amount) ? $obj->Total_Amount : '' ?></td>
                                         <td><?= Bootstrap4Html::checkbox('Submitted', $obj->Submitted,['readonly' => true,'disabled' => true]) ?></td>
                                     </tr>
                                 <?php endforeach; ?>

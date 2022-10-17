@@ -24,12 +24,12 @@ class TendersController extends Controller
                 'only' => ['logout', 'signup', 'index'],
                 'rules' => [
                     [
-                        'actions' => ['signup'],
+                        'actions' => ['signup','index'],
                         'allow' => true,
                         'roles' => ['?'],
                     ],
                     [
-                        'actions' => ['logout', 'index'],
+                        'actions' => ['logout'],
                         'allow' => true,
                         'roles' => ['@']
                     ],
@@ -72,7 +72,7 @@ class TendersController extends Controller
     {
         $service = Yii::$app->params['ServiceName']['SupplierBankAccounts'];
         $filter = [
-            'Supplier_No' => Yii::$app->user->identity->VendorId,
+           // 'Supplier_No' => Yii::$app->user->identity->VendorId,
         ];
         $data = Yii::$app->navhelper->getData($service, $filter);
 

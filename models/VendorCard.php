@@ -41,6 +41,10 @@ class VendorCard extends Model
     public $HasAcceptedTermsAndConditions;
     public $Key;
 
+    public $Gen_Bus_Posting_Group;
+    public $VAT_Bus_Posting_Group;
+    public $Vendor_Posting_Group;
+
     public $isNewRecord;
 
     

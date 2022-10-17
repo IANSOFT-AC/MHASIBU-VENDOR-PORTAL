@@ -66,9 +66,11 @@ class RegisterForm extends Model
         $user->setPassword($this->password);
         $user->generateAuthKey();
         $user->generateEmailVerificationToken();
+       // $user->VendorNo = 0;
+        $user->password_reset_token = Yii::$app->security->generateRandomString(10);
 
 
-
+       // Yii::$app->recruitment->printrr($user);
 
 
         return $user->save() && $this->sendEmail($user);

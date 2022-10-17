@@ -79,7 +79,7 @@ class CompanyProfileController extends Controller
 
         $model = new VendorCard();
         $model->PortalId = Yii::$app->user->identity->id;
-        $model->No = Yii::$app->user->identity->VendorNo;
+        //$model->No = Yii::$app->user->identity->VendorNo;
 
 
         $service = Yii::$app->params['ServiceName']['VendorCard'];

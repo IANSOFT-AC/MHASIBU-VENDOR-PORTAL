@@ -225,6 +225,7 @@ class QuotationsController extends Controller
         $filter = [
             //'Vendor_No' => Supplier::VendorNo(),
         ];
+        //Yii::$app->recruitment->printrr($filter);
         $results = Yii::$app->navhelper->getData($service, $filter);
 
         $result = [];
